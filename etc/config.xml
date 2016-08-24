@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<config>
+  <modules>
+    <Altolabs_Snappic>
+      <version>0.0.1</version>
+    </Altolabs_Snappic>
+  </modules>
+
+  <global>
+    <models>
+      <altolabs_snappic>
+        <class>Altolabs_Snappic_Model</class>
+      </altolabs_snappic>
+    </models>
+  </global>
+
+  <adminhtml>
+    <events>
+      <catalog_product_save_before>
+        <observers>
+          <altolabs_snappic>
+            <class>altolabs_snappic/observer</class>
+            <method>autoMetaDescription</method>
+          </altolabs_snappic>
+        </observers>
+      </catalog_product_save_before>
+
+      <catalog_product_save_before>
+        <observers>
+          <altolabs_snappic>
+            <type>singleton</type>
+            <class>altolabs_snappic/observer</class>
+            <method>detectProductChanges</method>
+          </altolabs_snappic>
+        </observers>
+      </catalog_product_save_before>
+
+      <catalog_product_attribute_update_before>
+        <observers>
+          <altolabs_snappic>
+            <type>singleton</type>
+            <class>altolabs_snappic/observer</class>
+            <method>detectProductAttributeChanges</method>
+          </altolabs_snappic>
+        </observers>
+
+      </catalog_product_attribute_update_before>
+
+      <catalog_product_delete_after>
+        <observers>
+          <altolabs_snappic>
+            <type>singleton</type>
+            <class>altolabs_snappic/observer</class>
+            <method>detectProductDeletion</method>
+          </altolabs_snappic>
+        </observers>
+      </catalog_product_delete_after>
+    </events>
+  </adminhtml>
+</config>
