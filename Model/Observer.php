@@ -99,24 +99,8 @@ class Altolabs_Snappic_Model_Observer {
       'billing_address'         => [
         'first_name'              => '',
         'last_name'               => $order->getCustomerName(),
-      ],
-      'line_items'              => self::sendableOrderItems($order)
+      ]
     ];
-  }
-
-  static private function sendableOrderItems(Mage_Sales_Order_Item_Collection $items) {
-    $items = [];
-    foreach ($items as $item) {
-      $items[] = [
-        'quantity'        => $item->getQtyToShip(),
-        'price'           => $item->getPrice(),
-        'taxable'         => true,
-        'total_discount'  => '0.00',
-        'product_id'      => 0,
-        'variant_id'      => 0
-      ];
-    }
-    return $items;
   }
 
   /* Signs given data.
