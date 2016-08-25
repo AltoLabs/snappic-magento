@@ -2,7 +2,7 @@
 <config>
   <modules>
     <Altolabs_Snappic>
-      <version>0.0.1</version>
+      <version>0.0.2</version>
     </Altolabs_Snappic>
   </modules>
 
@@ -12,46 +12,54 @@
         <class>Altolabs_Snappic_Model</class>
       </altolabs_snappic>
     </models>
+
+    <resources>
+      <snappic_setup>
+        <setup>
+          <module>Altolabs_Snappic</module>
+          <class>Altolabs_Snappic_Model_Resource_Setup</class>
+        </setup>
+      </snappic_setup>
+    </resources>
   </global>
 
   <adminhtml>
     <events>
-      <catalog_product_save_before>
+      <sales_order_place_after>
         <observers>
           <altolabs_snappic>
             <class>altolabs_snappic/observer</class>
-            <method>autoMetaDescription</method>
+            <method>onAfterOrderPlace</method>
           </altolabs_snappic>
         </observers>
-      </catalog_product_save_before>
+      </sales_order_place_after>
 
-      <catalog_product_save_before>
-        <observers>
-          <altolabs_snappic>
-            <type>singleton</type>
-            <class>altolabs_snappic/observer</class>
-            <method>detectProductChanges</method>
-          </altolabs_snappic>
-        </observers>
-      </catalog_product_save_before>
-
-      <catalog_product_attribute_update_before>
+      <catalog_product_save_after>
         <observers>
           <altolabs_snappic>
             <type>singleton</type>
             <class>altolabs_snappic/observer</class>
-            <method>detectProductAttributeChanges</method>
+            <method>onProductAfterSave</method>
           </altolabs_snappic>
         </observers>
+      </catalog_product_save_after>
 
-      </catalog_product_attribute_update_before>
+      <catalog_product_attribute_update_after>
+        <observers>
+          <altolabs_snappic>
+            <type>singleton</type>
+            <class>altolabs_snappic/observer</class>
+            <method>onProductAfterAttributeUpdate</method>
+          </altolabs_snappic>
+        </observers>
+      </catalog_product_attribute_update_after>
 
       <catalog_product_delete_after>
         <observers>
           <altolabs_snappic>
             <type>singleton</type>
             <class>altolabs_snappic/observer</class>
-            <method>detectProductDeletion</method>
+            <method>onProductAfterDelete</method>
           </altolabs_snappic>
         </observers>
       </catalog_product_delete_after>
