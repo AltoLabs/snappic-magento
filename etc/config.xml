@@ -23,44 +23,54 @@
     </resources>
   </global>
 
+  <frontend>
+    <events>
+      <controller_front_init_before>
+        <observers>
+          <altolabs_snappic_observer>
+            <class>altolabs_snappic/observer</class>
+            <method>onBeforeFrontendInit</method>
+          </altolabs_snappic_observer>
+        </observers>
+      </controller_front_init_before>
+    </events>
+  </frontend>
+
   <adminhtml>
     <events>
       <sales_order_place_after>
         <observers>
-          <altolabs_snappic>
+          <altolabs_snappic_observer>
             <class>altolabs_snappic/observer</class>
             <method>onAfterOrderPlace</method>
-          </altolabs_snappic>
+          </altolabs_snappic_observer>
         </observers>
       </sales_order_place_after>
 
       <catalog_product_save_after>
         <observers>
-          <altolabs_snappic>
-            <type>singleton</type>
+          <altolabs_snappic_observer>
             <class>altolabs_snappic/observer</class>
             <method>onProductAfterSave</method>
-          </altolabs_snappic>
+          </altolabs_snappic_observer>
         </observers>
       </catalog_product_save_after>
 
       <catalog_product_attribute_update_after>
         <observers>
-          <altolabs_snappic>
-            <type>singleton</type>
+          <altolabs_snappic_observer>
             <class>altolabs_snappic/observer</class>
             <method>onProductAfterAttributeUpdate</method>
-          </altolabs_snappic>
+          </altolabs_snappic_observer>
         </observers>
       </catalog_product_attribute_update_after>
 
       <catalog_product_delete_after>
         <observers>
-          <altolabs_snappic>
-            <type>singleton</type>
+          <altolabs_snappic_observer>
             <class>altolabs_snappic/observer</class>
             <method>onProductAfterDelete</method>
-          </altolabs_snappic>
+          </altolabs_snappic_observer>
         </observers>
       </catalog_product_delete_after>
     </events>

@@ -8,15 +8,21 @@ const SNAPPIC_HOST = 'http://dockerhost:3000';
 // const SNAPPIC_HOST = 'https://api.snappic.io';
 
 class Altolabs_Snappic_Model_Observer {
+  public function onBeforeFrontendInit(Varien_Event_Observer $observer) {
+    Mage::Log('THIS IS BEINBG OBSERVED!<!KM!<!KJNL');
+    die('-------------------------------->>>>>>> OBSERVED');
+  }
+
+
   public function onAfterOrderPlace(Varien_Event_Observer $observer) {
-    Mage::Log('-------------------->>> onAfterOrderPlace');
+    self::developerLoggedReturn('-------------------->>> onAfterOrderPlace');
     $order = $observer->getEvent()->getOrder();
     $sendable = self::sendableOrderData($order);
     self::notifySnappicApi('orders/paid', $sendable);
   }
 
   public function onProductAfterSave(Varien_Event_Observer $observer) {
-    Mage::Log('-------------------->>> onProductAfterSave');
+    self::developerLoggedReturn('-------------------->>> onProductAfterSave');
     $product = $observer->getEvent()->getProduct();
     if ($product->hasDataChanges()) {
       $sendable = self::sendableProductData($product);
@@ -26,7 +32,7 @@ class Altolabs_Snappic_Model_Observer {
   }
 
   public function onProductAfterAttributeUpdate(Varien_Event_Observer $observer) {
-    Mage::Log('-------------------->>> onProductAfterAttributeUpdate');
+    self::developerLoggedReturn('-------------------->>> onProductAfterAttributeUpdate');
     $productIds = $observer->getEvent()->getProductIds();
     $productModel = Mage::getModel('catalog/product');
     $sendable = array();
@@ -40,7 +46,7 @@ class Altolabs_Snappic_Model_Observer {
   }
 
   public function onProductAfterDelete(Varien_Event_Observer $observer) {
-    Mage::Log('-------------------->>> onProductAfterDelete');
+    self::developerLoggedReturn('-------------------->>> onProductAfterDelete');
     $product = $observer->getEvent()->getProduct();
     $sendable = $product->getId();
     $this->notifySnappicApi('products/delete', $sendable);
@@ -72,47 +78,56 @@ class Altolabs_Snappic_Model_Observer {
   }
 
   static private function sendableProductData(Mage_Catalog_Model_Product $product) {
-    return [
+    $sendable = [
       'id'              => $product->getId(),
       'title'           => $product->getName(),
       'description'     => $product->getDescription(),
-      'handle'          => $product->getUrlKey(),
+      'handle'          => $product->getUKey(),
       'updated_at'      => $product->getUpdatedAt(),
-      'images'          => self::sendableImagesData($product->getMediaGalleryImages()),
-      'options'         => self::sendableOptionsData($product->getOptions())
+      'variants'        => self::sendableVariantsData($product),
+      'images'          => self::sendableImagesData($product),
+      'options'         => self::sendableOptionsData($product)
     ];
+    return self::developerLoggedReturn($sendable);
   }
 
-  static private function sendableImagesData(Varien_Data_Collection $images) {
-    $sendable = [];
-    foreach ($images as $image) {
-      $sendable[] = self::sendableImageData($image);
+  static private function sendableVariantsData(Mage_Catalog_Model_Product $product) {
+    $sendables = [];
+    if ($product->isConfigurable()) {
+      $subProducts = Mage::getModel('catalog/product_type_configurable')->getUsedProducts(null, $product);
+      foreach ($subProducts as $subProduct) {
+        $sendable[] = [ 'id' => $subProduct->getId() ];
+      }
     }
-    return $sendable;
-  }
-  static private function sendableImageData($image) {
-    return [
-      'id'            => $image->getId(),
-      'src'           => $image->getUrl(),
-      'position'      => $image->getPosition(),
-      'updated_at'    => $image->getUpdatedAt()
-    ];
+    return $sendables;
   }
 
-  static private function sendableOptionsData(Varien_Data_Collection $options) {
+  static private function sendableImagesData(Mage_Catalog_Model_Product $product) {
+    $images = $product->getMediaGalleryImages();
+    $images_data = [];
+    foreach ($images as $image) {
+      $images_data[] = [
+        'id'            => $image->getId(),
+        'src'           => $image->getUrl(),
+        'position'      => $image->getPosition(),
+        'updated_at'    => $product->getUpdatedAt()
+      ];
+    }
+    return $images_data;
+  }
+
+  static private function sendableOptionsData(Mage_Catalog_Model_Product $product) {
+    $options = $product->getOptions();
     $sendable = [];
     foreach ($options as $option) {
-      $sendable[] = self::sendableImageData($option);
+      $sendable[] = [
+        'id'            => $option->getId(),
+        'name'          => $option->name(),
+        'position'      => $option->getPosition(),
+        'values'        => $option->getValues()
+      ];
     }
     return $sendable;
-  }
-  static private function sendableOptionData($option) {
-    return [
-      'id'            => $option->getId(),
-      'name'          => $option->name(),
-      'position'      => $option->getPosition(),
-      'values'        => $option->getValues()
-    ];
   }
 
   static private function sendableOrderData(Mage_Sales_Model_Order $order) {
@@ -144,5 +159,9 @@ class Altolabs_Snappic_Model_Observer {
    * @return string as the computed signature. */
   static private function signPayload($data) {
     return md5(SHARED_SECRET . $data);
+  }
+
+  static private function developerLoggedReturn($what) {
+    Mage::Log($what); return $what;
   }
 }
