@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
 <config>
   <modules>
-    <Altolabs_Snappic>
+    <AltoLabs_Snappic>
       <active>true</active>
       <codePool>local</codePool>
-    </Altolabs_Snappic>
+    </AltoLabs_Snappic>
   </modules>
 </config>
+<!-- Robbie note: This belongs in app/etc/modules - I think the module structure should reflect that at some stage -->

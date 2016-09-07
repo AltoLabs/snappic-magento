@@ -1,0 +1,25 @@
+-
+    - global
+    - sales_order_place_after
+    - altolabs_snappic/observer
+    - onAfterOrderPlace
+-
+    - frontend
+    - controller_front_init_before
+    - altolabs_snappic/observer
+    - onBeforeFrontendInit
+-
+    - adminhtml
+    - catalog_product_save_after
+    - altolabs_snappic/observer
+    - onProductAfterSave
+-
+    - adminhtml
+    - catalog_product_attribute_update_after
+    - altolabs_snappic/observer
+    - onProductAfterAttributeUpdate
+-
+    - adminhtml
+    - catalog_product_delete_after
+    - altolabs_snappic/observer
+    - onProductAfterDelete
