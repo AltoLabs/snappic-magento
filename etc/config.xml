@@ -42,14 +42,14 @@
 
     <frontend>
         <events>
-            <controller_front_init_before>
+            <controller_action_predispatch>
                 <observers>
                     <altolabs_snappic_observer_front_init_before>
                         <class>altolabs_snappic/observer</class>
-                        <method>onBeforeFrontendInit</method>
+                        <method>onControllerActionPredispatch</method>
                     </altolabs_snappic_observer_front_init_before>
                 </observers>
-            </controller_front_init_before>
+            </controller_action_predispatch>
         </events>
     </frontend>
 
