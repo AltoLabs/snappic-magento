@@ -12,9 +12,11 @@ class Altolabs_Snappic_Model_Observer
      * @param  Varien_Event_Observer $observer
      * @return self
      */
-    public function onBeforeFrontendInit(Varien_Event_Observer $observer)
+    public function onControllerActionPredispatch(Varien_Event_Observer $observer)
     {
-        Mage::log('THIS IS BEINBG OBSERVED!<!KM!<!KJNL', null, 'altolabs.log');
+        Mage::log('-------------------->>> onControllerActionPredispatch', null, 'altolabs.log');
+
+        $this->ensureLandingPageStored();
         return $this;
     }
 
@@ -117,5 +119,14 @@ class Altolabs_Snappic_Model_Observer
     public function getHelper()
     {
         return Mage::helper('altolabs_snappic');
+    }
+
+    private function ensureLandingPageStored() {
+        $session = Mage::getSingleton('core/session');
+        $landingPage = $session->getLandingPage();
+        if ($landingPage == null) {
+            $session->setLandingPage(Mage::helper('core/url')->getCurrentUrl());
+        }
+        return $session->getLandingPage();
     }
 }
