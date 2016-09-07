@@ -15,7 +15,6 @@ class Altolabs_Snappic_Model_Observer
     public function onControllerActionPredispatch(Varien_Event_Observer $observer)
     {
         Mage::log('-------------------->>> onControllerActionPredispatch', null, 'altolabs.log');
-
         $this->ensureLandingPageStored();
         return $this;
     }
