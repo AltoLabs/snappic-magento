@@ -1,9 +1,16 @@
 <?xml version="1.0"?>
+<!--
+/**
+ * @category Mage
+ * @package  AltoLabs_Snappic
+ * @author   AltoLabs <hi@altolabs.co>
+ */
+-->
 <config>
     <modules>
-        <Altolabs_Snappic>
+        <AltoLabs_Snappic>
             <version>0.0.2</version>
-        </Altolabs_Snappic>
+        </AltoLabs_Snappic>
     </modules>
 
     <global>
