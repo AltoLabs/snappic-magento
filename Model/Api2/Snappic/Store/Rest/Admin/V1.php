@@ -24,7 +24,7 @@ class AltoLabs_Snappic_Model_Api2_Snappic_Store_Rest_Admin_V1 extends AltoLabs_S
             ->setStoreDomain($store->getBaseUrl())
             ->setIanaTimezone(Mage::getStoreConfig(Mage_Core_Model_Locale::XML_PATH_DEFAULT_TIMEZONE, $store->getId()))
             ->setBaseCurrency($store->getBaseCurrencyCode())
-            ->setMoneyWithCurrencyFormat(Mage::helper('core')->currency(10.00, true, false));//'$ {{10.00}} ' . $store->getBaseCurrencyCode());
+            ->setMoneyWithCurrencyFormat(Mage::helper('core')->currency(10.00, true, false));
 
         return (array) $store->getData();
     }
