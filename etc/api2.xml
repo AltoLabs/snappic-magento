@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+<!--
+/**
+ * Defines custom Snappic API endpoints
+ *
+ * @category Mage
+ * @package  AltoLabs_Snappic
+ * @author   AltoLabs <hi@altolabs.co>
+ */
+-->
+<config>
+    <api2>
+        <resource_groups>
+            <snappic translate="title">
+                <title>Snappic</title>
+                <sort_order>200</sort_order>
+            </snappic>
+        </resource_groups>
+        <resources>
+            <store translate="title">
+                <group>snappic</group>
+                <model>altolabs_snappic/api2_snappic_store</model>
+                <title>Store Information</title>
+                <sort_order>20</sort_order>
+                <privileges>
+                    <admin>
+                        <retrieve>1</retrieve>
+                    </admin>
+                </privileges>
+                <attributes>
+                    <name>Name</name>
+                    <store_group_name>Store group name</store_group_name>
+                    <store_domain>Store domain</store_domain>
+                    <iana_timezone>IANA timezone</iana_timezone>
+                    <base_currency>Base currency</base_currency>
+                    <money_with_currency_format>Money with currency format</money_with_currency_format>
+                </attributes>
+                <routes>
+                    <route>
+                        <route>/snappic/stores/current</route>
+                        <action_type>entity</action_type>
+                    </route>
+                </routes>
+                <versions>1</versions>
+            </store>
+        </resources>
+    </api2>
+</config>
