@@ -13,9 +13,7 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract
      *
      * @var string
      */
-    const SHARED_SECRET = 'abc123456';
     const SNAPPIC_HOST = 'http://dockerhost:3000';
-    // const SNAPPIC_HOST = 'https://api.snappic.io';
 
     /**
      * The payload to send to the Snappic API
@@ -99,6 +97,15 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract
      */
     public function signPayload($data)
     {
-        return md5(self::SHARED_SECRET . $data);
+        return md5($this->snappicOAuthTokenSecret() . $data);
+    }
+
+    /**
+     * Retrieves OAuth secret for the Snappic consumer.
+     *
+     * @return string The shared secret.
+     */
+    public function snappicOAuthTokenSecret() {
+        return Mage::getModel('oauth/consumer')->load('Snappic', 'name')->getSecret();
     }
 }

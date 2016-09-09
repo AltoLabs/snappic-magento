@@ -24,7 +24,7 @@ class AltoLabs_Snappic_Helper_Data extends Mage_Core_Helper_Abstract
             'id'          => $product->getId(),
             'title'       => $product->getName(),
             'description' => $product->getDescription(),
-            'handle'      => $product->getUKey(), // $product->getUrlKey() ???
+            'handle'      => $product->getUrlKey(),
             'updated_at'  => $product->getUpdatedAt(),
             'variants'    => $this->getSendableVariantsData($product),
             'images'      => $this->getSendableImagesData($product),
