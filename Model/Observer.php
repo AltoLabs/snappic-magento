@@ -15,7 +15,7 @@ class Altolabs_Snappic_Model_Observer
     public function onControllerActionPredispatch(Varien_Event_Observer $observer)
     {
         Mage::log('-------------------->>> onControllerActionPredispatch', null, 'altolabs.log');
-        $this->ensureLandingPageStored();
+        $this->_ensureLandingPageStored();
         return $this;
     }
 
@@ -120,7 +120,13 @@ class Altolabs_Snappic_Model_Observer
         return Mage::helper('altolabs_snappic');
     }
 
-    private function ensureLandingPageStored() {
+    /**
+     * Sets the landing URL into the session
+     *
+     * @return string
+     */
+    protected function _ensureLandingPageStored()
+    {
         $session = Mage::getSingleton('core/session');
         $landingPage = $session->getLandingPage();
         if ($landingPage == null) {

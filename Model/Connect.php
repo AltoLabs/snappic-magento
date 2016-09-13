@@ -39,7 +39,7 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract
         $client->setHeaders(
             array(
                 'Content-type'                => 'application/json',
-                'X-Magento-Shop-Domain'       => $this->getStoreDomain(),
+                'X-Magento-Shop-Domain'       => $this->_getStoreDomain(),
                 'X-Magento-Topic'             => $topic,
                 'X-Magento-Webhook-Signature' => $this->signPayload($sendable)
             )
@@ -97,7 +97,7 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract
      */
     public function signPayload($data)
     {
-        return md5($this->snappicOAuthTokenSecret() . $data);
+        return md5($this->_snappicOAuthTokenSecret() . $data);
     }
 
     /**
@@ -105,11 +105,18 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract
      *
      * @return string The shared secret.
      */
-    private function snappicOAuthTokenSecret() {
+    protected function _snappicOAuthTokenSecret()
+    {
         return Mage::getModel('oauth/consumer')->load('Snappic', 'name')->getSecret();
     }
 
-    private function getStoreDomain() {
+    /**
+     * Gets the domain for the current store
+     *
+     * @return string
+     */
+    protected function _getStoreDomain()
+    {
         $components = parse_url(Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_LINK));
         return $components['host'];
     }

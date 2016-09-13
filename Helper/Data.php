@@ -16,9 +16,10 @@ class AltoLabs_Snappic_Helper_Data extends Mage_Core_Helper_Abstract
 
     /**
      * @param  Mage_Catalog_Model_Product $product
+     * @param  bool                       $forApi
      * @return array
      */
-    public function getSendableProductData(Mage_Catalog_Model_Product $product)
+    public function getSendableProductData(Mage_Catalog_Model_Product $product, $forApi = false)
     {
         $sendable = [
             'id'          => $product->getId(),
@@ -26,25 +27,41 @@ class AltoLabs_Snappic_Helper_Data extends Mage_Core_Helper_Abstract
             'description' => $product->getDescription(),
             'handle'      => $product->getUrlKey(),
             'updated_at'  => $product->getUpdatedAt(),
-            'variants'    => $this->getSendableVariantsData($product),
-            'images'      => $this->getSendableImagesData($product),
-            'options'     => $this->getSendableOptionsData($product)
+            'variants'    => $this->getSendableVariantsData($product, $forApi),
+            'images'      => $this->getSendableImagesData($product, $forApi),
+            'options'     => $this->getSendableOptionsData($product, $forApid)
         ];
         return $this->_debugReturn($sendable);
     }
 
     /**
      * @param  Mage_Catalog_Model_Product $product
+     * @param  bool                       $forApi
      * @return array
      */
-    public function getSendableVariantsData(Mage_Catalog_Model_Product $product)
+    public function getSendableVariantsData(Mage_Catalog_Model_Product $product, $forApi = false)
     {
         $sendable = array();
         if ($product->isConfigurable()) {
             $subProducts = Mage::getModel('catalog/product_type_configurable')
                 ->getUsedProducts(null, $product);
             foreach ($subProducts as $subProduct) { /** @var Mage_Catalog_Model_Product $subProduct */
-                $sendable[] = array('id' => $subProduct->getId());
+                $subProduct
+                    ->setStoreId($product->getStoreId())
+                    ->load($subProduct->getId());
+
+                if (!$forApi) {
+                    $sendable[] = array('id' => $subProduct->getId());
+                    continue;
+                }
+
+                $sendable[] = array(
+                    'id'         => $subProduct->getId(),
+                    'title'      => $subProduct->getName(),
+                    'sku'        => $subProduct->getSku(),
+                    'price'      => $subProduct->getPrice(),
+                    'updated_at' => $subProduct->getUpdatedAt()
+                );
             }
         }
         return $sendable;
@@ -58,7 +75,7 @@ class AltoLabs_Snappic_Helper_Data extends Mage_Core_Helper_Abstract
     {
         $images = $product->getMediaGalleryImages();
         $imagesData = array();
-        foreach ($images as $image) {
+        foreach ($images as $image) { /** @var Varien_Object $image */
             $imagesData[] = [
                 'id'         => $image->getId(),
                 'src'        => $image->getUrl(),
@@ -75,14 +92,21 @@ class AltoLabs_Snappic_Helper_Data extends Mage_Core_Helper_Abstract
      */
     public function getSendableOptionsData(Mage_Catalog_Model_Product $product)
     {
-        $options = $product->getOptions();
+        $options = $product->getProductOptionsCollection();
+
         $sendable = array();
-        foreach ($options as $option) {
+        foreach ($options as $option) { /** @var Mage_Catalog_Model_Product_Option $option */
+            $optionValues = array();
+            foreach ($option->getValuesCollection() as $optionValue) {
+                /** @var Mage_Catalog_Model_Product_Option_Value $optionValue */
+                $optionValues[] = (string) $optionValue->getTitle();
+            }
+
             $sendable[] = array(
                 'id'       => $option->getId(),
-                'name'     => $option->name(),
-                'position' => $option->getPosition(),
-                'values'   => $option->getValues()
+                'name'     => $option->getTitle(),
+                'position' => $option->getSortOrder(),
+                'values'   => $optionValues
             );
         }
         return $sendable;

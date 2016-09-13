@@ -17,7 +17,48 @@
             </snappic>
         </resource_groups>
         <resources>
-            <store translate="title">
+            <snappic_product translate="title">
+                <group>snappic</group>
+                <model>altolabs_snappic/api2_snappic_product</model>
+                <working_model>catalog/product</working_model>
+                <title>Catalog Product</title>
+                <sort_order>10</sort_order>
+                <privileges>
+                    <admin>
+                        <retrieve>1</retrieve>
+                    </admin>
+                </privileges>
+                <attributes>
+                    <id>Product ID</id>
+                    <title>Product Name</title>
+                    <description>Description</description>
+                    <handle>URL key</handle>
+                    <updated_at>Last updated date</updated_at>
+                    <variants>Product variants</variants>
+                    <images>Product images</images>
+                    <options>Product options</options>
+                </attributes>
+                <routes>
+                    <route_entity>
+                        <route>/snappic/products/:id</route>
+                        <action_type>entity</action_type>
+                    </route_entity>
+                    <route_entity_with_store>
+                        <route>/snappic/products/:id/store/:store</route>
+                        <action_type>entity</action_type>
+                    </route_entity_with_store>
+                    <route_collection>
+                        <route>/snappic/products</route>
+                        <action_type>collection</action_type>
+                    </route_collection>
+                    <route_collection_with_store>
+                        <route>/snappic/products/store/:store</route>
+                        <action_type>collection</action_type>
+                    </route_collection_with_store>
+                </routes>
+                <versions>1</versions>
+            </snappic_product>
+            <snappic_store translate="title">
                 <group>snappic</group>
                 <model>altolabs_snappic/api2_snappic_store</model>
                 <title>Store Information</title>
@@ -42,7 +83,7 @@
                     </route>
                 </routes>
                 <versions>1</versions>
-            </store>
+            </snappic_store>
         </resources>
     </api2>
 </config>
