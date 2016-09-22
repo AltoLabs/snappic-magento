@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config>
+  <modules>
+    <AltoLabs_Snappic>
+      <active>true</active>
+      <codePool>local</codePool>
+    </AltoLabs_Snappic>
+  </modules>
+</config>
