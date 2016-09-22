@@ -1,0 +1,39 @@
+{
+    "name":"AltoLabs/Snappic",
+    "version": "0.0.1-dev",
+    "type":"magento-module",
+    "license":"GPL-3.0",
+    "description":"AltoLabs Snappic Extension",
+    "homepage":"https://github.com/Flagbit/Magento-FilterUrls",
+    "authors":[{
+        "name":"AltoLabs DevTeam",
+        "email":"Hi@AltoLabs.co"
+    }],
+    "extra":{
+        "magento-root-dir": "app",
+        "auto-append-gitignore": true,
+        "magento_connect": {
+            "channel":"community",
+            "php_min":"5.3.0",
+            "php_max":"6.0.0",
+    	      "stability":"beta",
+            "content":[{
+                "type":"magelocal",
+                "structure":"dir",
+                "path":"AltoLabs/Snappic"
+            }, {
+                "type":"mageetc",
+                "structure":"file",
+                "path":"modules/AltoLabs_Snappic.xml"
+            }, {
+                "type":"magedesign",
+                "structure":"file",
+                "path":"frontend/base/default/layout/snappic.xml"
+            }, {
+                "type":"magedesign",
+                "structure":"file",
+                "path":"frontend/base/default/template/snappic/catalog_product_view.phtml"
+            }]
+        }
+    }
+}
