@@ -80,5 +80,5 @@ if (!$consumer->getId()) {
         ->save();
 }
 
-echo("AltoLabs Setup complete. Please copy-paste the following message to your Snappic representative:$endl");
+echo("AltoLabs Snappic Setup complete.$endl");
 echo('Key=' . $consumer->getData('key') . ', Secret=' . $consumer->getData('secret') . $endl);
