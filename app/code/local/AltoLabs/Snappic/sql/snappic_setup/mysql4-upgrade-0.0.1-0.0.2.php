@@ -1,3 +1,2 @@
 <?php
-// echo 'Running This Upgrade: '.get_class($this)."\n <br /> \n";
-//die("Exit for now");
+echo("Upgrading from 0.0.1 to 0.0.2...");
