@@ -34,8 +34,6 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract
         Mage::Log('Snappic: notifySnappicApi '.self::SNAPPIC_HOST.'/magento/webhooks');
         $client = new Zend_Http_Client(self::SNAPPIC_HOST.'/magento/webhooks');
         $client->setMethod(Zend_Http_Client::POST);
-
-        //$client->setParameterPost('data', $sendable);
         $sendable = $this->seal($this->getSendable());
         $client->setRawData($sendable);
         $client->setHeaders(
@@ -57,6 +55,48 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract
         }
 
         return true;
+    }
+
+    /**
+     * This method retrieves the remote store associated with this magento domain
+     * and parses the JSON response.
+     *
+     * @return mixed
+     */
+    public function getSnappicStore()
+    {
+        Mage::Log('Snappic: getSnappicStore');
+        if ($this->get('snappicStore') != NULL) {
+          return $this->get('snappicStore');
+        }
+
+        $domain = $this->getHelper()->getStoreDomain();
+        $client = new Zend_Http_Client(self::SNAPPIC_HOST.'/stores/current?domain='.$domain);
+        $client->setMethod(Zend_Http_Client::GET);
+        try {
+            Mage::Log('Querying facebook ID for '.$domain.'...');
+            $body = $client->request()->getBody();
+            $snappicStore = json_decode($body);
+            $this->setData('snappicStore', $snappicStore);
+            return $snappicStore;
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    /**
+     * This method checks whether or not a pixel ID is registered for the current store
+     * and handles the retrieval and registration of one if not.
+     */
+    public function getFacebookId()
+    {
+        $facebookId = Mage::getStoreConfig('snappic/general/facebook_pixel_id');
+        if ($facebookId == '' || $facebookId != null) {
+            $facebookId = $this->getSnappicStore()->facebook_pixel_id;
+            Mage::app()->getConfig()->saveConfig('snappic/general/facebook_pixel_id', $facebookId);
+        }
+        Mage::Log('Got Facebook ID '.$facebookId.'.');
+        return $facebookId;
     }
 
     /**
