@@ -1,4 +1,8 @@
 <?php
+$session = Mage::getSingleton('core/session');
+$session->unsCartProductJustAdded()
+if ($session->getCartProductJustAdded() !== true) { return; }
+
 $id = Mage::getModel('altolabs_snappic/connect')->getFacebookId();
 if (!$id || $id == '') { return; }
 

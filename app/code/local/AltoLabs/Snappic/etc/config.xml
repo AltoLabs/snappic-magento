@@ -49,6 +49,14 @@
 
     <frontend>
         <events>
+            <controller_action_predispatch_checkout_cart_add>
+              <observers>
+                  <altolabs_snappic_observer_checkout_cart_add>
+                      <class>altolabs_snappic/observer</class>
+                      <method>onAfterProductAddToCart</method>
+                  </altolabs_snappic_observer_checkout_cart_add>
+              </observers>
+            </controller_action_predispatch_checkout_cart_add>
             <controller_action_predispatch>
                 <observers>
                     <altolabs_snappic_observer_front_init_before>

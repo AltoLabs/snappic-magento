@@ -20,6 +20,11 @@ class Altolabs_Snappic_Model_Observer
         return $this;
     }
 
+    public function onAfterProductAddToCart(Varien_Event_Observer $observer)
+    {
+        Mage::getSingleton('core/session')->setCartProductJustAdded(true);
+    }
+
     /**
      * @param Varien_Event_Observer $observer
      *
