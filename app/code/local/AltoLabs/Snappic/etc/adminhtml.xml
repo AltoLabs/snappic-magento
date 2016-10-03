@@ -1,4 +1,13 @@
 <?xml version="1.0" ?>
+<!--
+/**
+ * This file is Copyright AltoLabs 2016.
+ *
+ * @category Mage
+ * @package  AltoLabs_Snappic
+ * @author   AltoLabs <hi@altolabs.co>
+ */
+-->
 <config>
     <acl>
         <resources>

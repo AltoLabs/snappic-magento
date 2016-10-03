@@ -1,92 +1,122 @@
 <?php
+/**
+ * Installs the Snappic extension and creates necessary API rules for connections to and from the Snappic API
+ *
+ * This file is Copyright AltoLabs 2016.
+ *
+ * @category Mage
+ * @package  AltoLabs_Snappic
+ * @author   AltoLabs <hi@altolabs.co>
+ */
 
-$endl = "\r\n";
+Mage::log('Performing AltoLabs Snappic Extension installation...', null, 'snappic.log');
 
-Mage::Log("Performing AltoLabs Snappic Extension installation...");
-
+/** @var Mage_OAuth_Helper_Data $oauthHelper */
 $oauthHelper = Mage::helper('oauth');
 
-Mage::Log("Checking for the Snappic user...");
+Mage::log('Checking for the Snappic user...', null, 'snappic.log');
 $user = Mage::getModel('admin/user')->load('snappic', 'username');
 if (!$user->getId()) {
-  Mage::Log("User was not found, creating...");
-  $user = Mage::getModel('admin/user')
-      ->setData(array(
-          'username'  => 'snappic',
-          'firstname' => 'Snappic',
-          'lastname'  => 'Snappic',
-          'email'     => 'hi@snappic.io',
-          'password'  => $oauthHelper->generateToken(),
-          'is_active' => 1))
-      ->save();
+    Mage::log('User was not found, creating...', null, 'snappic.log');
+    $user = Mage::getModel('admin/user')
+        ->setData(
+            array(
+                'username'  => 'snappic',
+                'firstname' => 'Snappic',
+                'lastname'  => 'Snappic',
+                'email'     => 'hi@snappic.io',
+                'password'  => $oauthHelper->generateToken(),
+                'is_active' => 1
+            )
+        )->save();
 }
 
-Mage::Log("Checking for the Snappic Role...");
-$adminRole = Mage::getModel('api2/acl_global_role')->load('Snappic', 'role_name');
+Mage::log('Checking for the Snappic Role...', null, 'snappic.log');
+/** @var Mage_Api2_Model_Global_Role $adminRole */
+$adminRole = Mage::getModel('api2/acl_global_role')
+    ->load('Snappic', 'role_name');
+
 if (!$adminRole->getId()) {
-    Mage::Log("Role was not found, creating...");
+    Mage::log('Role was not found, creating...', null, 'snappic.log');
     $adminRole = Mage::getModel('api2/acl_global_role')
         ->setData(array('role_name' => 'Snappic'))
         ->save();
 }
 
-Mage::Log("Configuring ACLs...");
+Mage::log('Configuring ACLs...', null, 'snappic.log');
 $adminRoleId = $adminRole->getId();
-foreach (['snappic_product', 'snappic_store'] as $snappicResource) {
-    $globalRule = Mage::getModel('api2/acl_global_rule')->load($snappicResource, 'resource_id');
-    if ($globalRule->getId()) { continue; }
-    Mage::Log("Allowing the Snappic Role to retrieve $snappicResource...");
+foreach (array('snappic_product', 'snappic_store') as $snappicResource) {
+    $globalRule = Mage::getModel('api2/acl_global_rule')
+        ->load($snappicResource, 'resource_id');
+
+    if ($globalRule->getId()) {
+        continue;
+    }
+
+    Mage::log("Allowing the Snappic Role to retrieve $snappicResource...", null, 'snappic.log');
     Mage::getModel('api2/acl_global_rule')
         ->setRoleId($adminRoleId)
         ->setResourceId($snappicResource)
-        ->setPrivilege('retrieve')->save();
+        ->setPrivilege('retrieve')
+        ->save();
 }
 
-
 $aclsByResource = array(
-  'snappic_store' => 'name,store_group_name,store_domain,iana_timezone,currency,money_with_currency_format',
+  'snappic_store'   => 'name,store_group_name,store_domain,iana_timezone,currency,money_with_currency_format',
   'snappic_product' => 'id,title,description,price,handle,updated_at,variants,images,options'
 );
 foreach ($aclsByResource as $resource => $attributes) {
-  Mage::Log("Checking for ACLs for $resource...");
+    Mage::log("Checking for ACLs for $resource...", null, 'snappic.log');
+
+    /** @var Mage_Api2_Model_Acl_Filter_Attribute $aclEntry */
     $aclEntry = Mage::getModel('api2/acl_filter_attribute')
         ->getCollection()
         ->addFieldToFilter('user_type', Mage_Api2_Model_Acl_Global_Role::ROLE_CONFIG_NODE_NAME_ADMIN)
         ->addFieldToFilter('resource_id', $resource)
         ->addFieldToFilter('operation', Mage_Api2_Model_Resource::OPERATION_ATTRIBUTE_READ)
         ->getFirstItem();
-    if (!$aclEntry->getId()) {
-      Mage::Log("Creating ACLs for $snappicResource...");
-      $aclEntry = Mage::getModel('api2/acl_filter_attribute')
-                      ->setUserType(Mage_Api2_Model_Acl_Global_Role::ROLE_CONFIG_NODE_NAME_ADMIN)
-                      ->setResourceId($resource)
-                      ->setOperation(Mage_Api2_Model_Resource::OPERATION_ATTRIBUTE_READ);
-    }
-    Mage::Log("Updating attributes for ACLs $snappicResource...");
-    $aclEntry->setAllowedAttributes($attributes)->save();
-}
 
-Mage::Log("Preparing the Snappic OAuth Consumer...");
-$consumer = Mage::getModel('oauth/consumer')->load('Snappic', 'name');
-if (!$consumer->getId()) {
-    $consumer = Mage::getModel('oauth/consumer')
-        ->setData(array(
-            'name' => 'Snappic',
-            'key' => $oauthHelper->generateToken(),
-            'secret' => $oauthHelper->generateTokenSecret(),
-            'callback_url' => 'https://www.snappic.io',
-            'rejected_callback_url' => 'https://www.snappic.io'))
+    if (!$aclEntry->getId()) {
+        Mage::log("Creating ACLs for $snappicResource...", null, 'snappic.log');
+        $aclEntry = Mage::getModel('api2/acl_filter_attribute')
+            ->setUserType(Mage_Api2_Model_Acl_Global_Role::ROLE_CONFIG_NODE_NAME_ADMIN)
+            ->setResourceId($resource)
+            ->setOperation(Mage_Api2_Model_Resource::OPERATION_ATTRIBUTE_READ);
+    }
+
+    Mage::log("Updating attributes for ACLs $snappicResource...", null, 'snappic.log');
+
+    $aclEntry
+        ->setAllowedAttributes($attributes)
         ->save();
 }
 
-# TODO: Prepare SOAP User and Role.
+Mage::log('Preparing the Snappic OAuth Consumer...', null, 'snappic.log');
+$consumer = Mage::getModel('oauth/consumer')->load('Snappic', 'name');
+if (!$consumer->getId()) {
+    /** @var Mage_Oauth_Model_Consumer $consumer */
+    $consumer = Mage::getModel('oauth/consumer')
+        ->setData(
+            array(
+                'name'                  => 'Snappic',
+                'key'                   => $oauthHelper->generateToken(),
+                'secret'                => $oauthHelper->generateTokenSecret(),
+                'callback_url'          => 'https://www.snappic.io',
+                'rejected_callback_url' => 'https://www.snappic.io'
+            )
+        )->save();
+}
 
-Mage::Log('Ensuring a facebook pixel ID is set...');
+// TODO: Prepare SOAP User and Role.
+
+Mage::log('Ensuring a Facebook pixel ID is set...', null, 'snappic.log');
 $facebookId = Mage::getSingleton('altolabs_snappic/connect')->getFacebookId();
 
-Mage::Log(
-  'AltoLabs Snappic Setup successfuly completed with '.
-  'Key='.$consumer->getData('key').', ' .
-  'Secret='.$consumer->getData('secret').', ' .
-  'FacebookId='.$facebookId
+Mage::log(
+    'AltoLabs Snappic Setup successfuly completed with '.
+    'Key=' . $consumer->getData('key') . ', ' .
+    'Secret=' . $consumer->getData('secret') . ', ' .
+    'FacebookId=' . $facebookId,
+    null,
+    'snappic.log'
 );
