@@ -12,7 +12,7 @@
     <modules>
         <AltoLabs_Snappic>
             <active>true</active>
-            <codePool>local</codePool>
+            <codePool>community</codePool>
             <depends>
                 <Mage_Core />
                 <Mage_Catalog />
