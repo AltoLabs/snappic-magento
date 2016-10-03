@@ -1,38 +1,41 @@
 <?php
 /**
- * This file is Copyright Altolabs 2016.
+ * This file is Copyright AltoLabs 2016.
  *
  * @category Mage
- *
- * @author   Pierre Martin <hickscorp@gmail.com>
+ * @package  AltoLabs_Snappic
+ * @author   AltoLabs <hi@altolabs.co>
  */
 class Altolabs_Snappic_Model_Observer
 {
     /**
-     * @param Varien_Event_Observer $observer
-     *
+     * @param  Varien_Event_Observer $observer
      * @return self
      */
     public function onControllerActionPredispatch(Varien_Event_Observer $observer)
     {
-        Mage::Log('Snappic: onControllerActionPredispatch');
+        Mage::log('Snappic: onControllerActionPredispatch', null, 'snappic.log');
         $this->_ensureLandingPageStored();
         return $this;
     }
 
+    /**
+     * @param  Varien_Event_Observer $observer
+     * @return self
+     */
     public function onAfterProductAddToCart(Varien_Event_Observer $observer)
     {
         Mage::getSingleton('core/session')->setCartProductJustAdded(true);
+        return $this;
     }
 
     /**
-     * @param Varien_Event_Observer $observer
-     *
+     * @param  Varien_Event_Observer $observer
      * @return self
      */
     public function onAfterOrderPlace(Varien_Event_Observer $observer)
     {
-        Mage::Log('Snappic: onAfterOrderPlace');
+        Mage::log('Snappic: onAfterOrderPlace', null, 'snappic.log');
         /** @var Mage_Sales_Model_Order $order */
         $order = $observer->getEvent()->getOrder();
         $sendable = $this->getHelper()->getSendableOrderData($order);
@@ -43,13 +46,12 @@ class Altolabs_Snappic_Model_Observer
     }
 
     /**
-     * @param Varien_Event_Observer $observer
-     *
+     * @param  Varien_Event_Observer $observer
      * @return self
      */
     public function onProductAfterSave(Varien_Event_Observer $observer)
     {
-        Mage::Log('Snappic: onProductAfterSave');
+        Mage::log('Snappic: onProductAfterSave', null, 'snappic.log');
         /** @var Mage_Catalog_Model_Product $product */
         $product = $observer->getEvent()->getProduct();
         if ($product->hasDataChanges()) {
@@ -63,36 +65,36 @@ class Altolabs_Snappic_Model_Observer
     }
 
     /**
-     * @param Varien_Event_Observer $observer
-     *
+     * @param  Varien_Event_Observer $observer
      * @return self
      */
     public function onProductAfterAttributeUpdate(Varien_Event_Observer $observer)
     {
-        Mage::Log('Snappic: onProductAfterAttributeUpdate');
+        Mage::log('Snappic: onProductAfterAttributeUpdate', null, 'snappic.log');
         $productIds = $observer->getEvent()->getProductIds();
+        /** @var Mage_Catalog_Model_Product $productModel */
         $productModel = Mage::getModel('catalog/product');
         $sendable = array();
+
         foreach ($productIds as $id) {
             $product = $productModel->load($id);
             $sendable[] = $this->getHelper()->getSendableProductData($product);
         }
-        $this->getConnect()->setSendable($sendable)->notifySnappicApi('products/update');
 
+        $this->getConnect()->setSendable($sendable)->notifySnappicApi('products/update');
         return $this;
     }
 
     /**
-     * @param Varien_Event_Observer $observer
-     *
+     * @param  Varien_Event_Observer $observer
      * @return self
      */
     public function onProductAfterDelete(Varien_Event_Observer $observer)
     {
-        Mage::Log('Snappic: onProductAfterDelete');
+        Mage::log('Snappic: onProductAfterDelete', null, 'snappic.log');
         /** @var Mage_Catalog_Model_Product $product */
         $product = $observer->getEvent()->getProduct();
-        $sendable = [$this->getHelper()->getSendableProductData($product)];
+        $sendable = array($this->getHelper()->getSendableProductData($product));
         $this->getConnect()
             ->setSendable($sendable)
             ->notifySnappicApi('products/delete');
@@ -129,7 +131,7 @@ class Altolabs_Snappic_Model_Observer
     {
         $session = Mage::getSingleton('core/session');
         $landingPage = $session->getLandingPage();
-        if ($landingPage == null) {
+        if (!$landingPage) {
             $session->setLandingPage(Mage::helper('core/url')->getCurrentUrl());
         }
         return $session->getLandingPage();

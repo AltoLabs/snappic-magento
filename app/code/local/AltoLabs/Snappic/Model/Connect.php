@@ -1,9 +1,9 @@
 <?php
 /**
- * The Connect model communicates with the Snappic API.
+ * This file is Copyright AltoLabs 2016.
  *
  * @category Mage
- *
+ * @package  AltoLabs_Snappic
  * @author   AltoLabs <hi@altolabs.co>
  */
 class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract
@@ -13,7 +13,7 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract
      *
      * @var string
      */
-    const SNAPPIC_HOST = 'http://dockerhost:3000';
+    const SNAPPIC_HOST = 'https://api.snappic.io';
 
     /**
      * The payload to send to the Snappic API.
@@ -25,22 +25,21 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract
     /**
      * This method is in charge of sending data to the Snappic API.
      *
-     * @param string $topic The type of event to be sent
-     *
+     * @param  string $topic The type of event to be sent
      * @return bool
      */
     public function notifySnappicApi($topic)
     {
-        Mage::Log('Snappic: notifySnappicApi '.self::SNAPPIC_HOST.'/magento/webhooks');
-        $client = new Zend_Http_Client(self::SNAPPIC_HOST.'/magento/webhooks');
+        Mage::log('Snappic: notifySnappicApi ' . self::SNAPPIC_HOST . '/magento/webhooks', null, 'snappic.log');
+        $client = new Zend_Http_Client(self::SNAPPIC_HOST . '/magento/webhooks');
         $client->setMethod(Zend_Http_Client::POST);
         $sendable = $this->seal($this->getSendable());
         $client->setRawData($sendable);
         $client->setHeaders(
             array(
-                'Content-type' => 'application/json',
-                'X-Magento-Shop-Domain' => $this->getHelper()->getStoreDomain(),
-                'X-Magento-Topic' => $topic,
+                'Content-type'                => 'application/json',
+                'X-Magento-Shop-Domain'       => $this->getHelper()->getStoreDomain(),
+                'X-Magento-Topic'             => $topic,
                 'X-Magento-Webhook-Signature' => $this->signPayload($sendable),
             )
         );
@@ -65,18 +64,18 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract
      */
     public function getSnappicStore()
     {
-        Mage::Log('Snappic: getSnappicStore');
-        if ($this->get('snappicStore') != NULL) {
-          return $this->get('snappicStore');
+        Mage::log('Snappic: getSnappicStore', null, 'snappic.log');
+        if ($this->get('snappicStore')) {
+             return $this->get('snappicStore');
         }
 
         $domain = $this->getHelper()->getStoreDomain();
-        $client = new Zend_Http_Client(self::SNAPPIC_HOST.'/stores/current?domain='.$domain);
+        $client = new Zend_Http_Client(self::SNAPPIC_HOST . '/stores/current?domain=' . $domain);
         $client->setMethod(Zend_Http_Client::GET);
         try {
-            Mage::Log('Querying facebook ID for '.$domain.'...');
+            Mage::log('Querying facebook ID for ' . $domain . '...', null, 'snappic.log');
             $body = $client->request()->getBody();
-            $snappicStore = json_decode($body);
+            $snappicStore = Mage::helper('core')->jsonDecode($body, Zend_Json::TYPE_OBJECT);
             $this->setData('snappicStore', $snappicStore);
             return $snappicStore;
         } catch (Exception $e) {
@@ -87,33 +86,33 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract
     /**
      * This method checks whether or not a pixel ID is registered for the current store
      * and handles the retrieval and registration of one if not.
+     *
+     * @return string
      */
     public function getFacebookId()
     {
         $facebookId = Mage::getStoreConfig('snappic/general/facebook_pixel_id');
-        if ($facebookId == null || $facebookId == '') {
-            Mage::log('Trying to fetch facebook ID from Sanppic API...');
+        if (empty($facebookId)) {
+            Mage::log('Trying to fetch Facebook ID from Sanppic API...', null, 'snappic.log');
             $facebookId = $this->getSnappicStore()->facebook_pixel_id;
-            if ($facebookId != null && $facebookId != '') {
-                Mage::log('Got facebook ID from api: '.$facebookId);
+            if (!empty($facebookId)) {
+                Mage::log('Got facebook ID from API: ' . $facebookId);
                 Mage::app()->getConfig()->saveConfig('snappic/general/facebook_pixel_id', $facebookId);
             }
         }
-        Mage::Log('Got Facebook ID '.$facebookId.'.');
+        Mage::log('Got Facebook ID ' . $facebookId . '.', null, 'snappic.log');
         return $facebookId;
     }
 
     /**
      * Set the sendable payload for the Snappic API.
      *
-     * @param mixed $sendable The actual payload to be serialized and sent
-     *
+     * @param  mixed $sendable The actual payload to be serialized and sent
      * @return self
      */
     public function setSendable($sendable)
     {
         $this->_sendable = $sendable;
-
         return $this;
     }
 
@@ -130,25 +129,23 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract
     /**
      * Return a JSON representation of the input data.
      *
-     * @param mixed $input
-     *
+     * @param  mixed $input
      * @return string
      */
     public function seal($input)
     {
-        return json_encode(array('data' => $input));
+        return Mage::helper('core')->jsonEncode(array('data' => $input));
     }
 
     /**
      * Signs given data.
      *
-     * @param string $data The data to be signed
-     *
+     * @param  string $data The data to be signed
      * @return string The computed signature
      */
     public function signPayload($data)
     {
-        return md5($this->_snappicOAuthTokenSecret().$data);
+        return md5($this->_snappicOauthTokenSecret() . $data);
     }
 
     /**
@@ -166,12 +163,24 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract
      *
      * @return string The shared secret
      */
-    protected function _snappicOAuthTokenSecret()
+    protected function _snappicOauthTokenSecret()
     {
+        /** @var Mage_Oauth_Model_Consumer $consumer */
         $consumer = Mage::getModel('oauth/consumer')->load('Snappic', 'name');
-        $tokens = Mage::getModel('oauth/token')->getCollection()->addFieldToFilter('consumer_id', $consumer->getId());
-        foreach ($tokens as $token) {
-            return $token->getSecret();
+        if (!$consumer->getId()) {
+            return '';
         }
+
+        $tokens = Mage::getModel('oauth/token')
+            ->getCollection()
+            ->addFieldToFilter('consumer_id', $consumer->getId());
+
+        $response = '';
+        foreach ($tokens as $token) { /** @var Mage_Oauth_Model_Token $token */
+            $response = $token->getSecret();
+            break;
+        }
+
+        return $response;
     }
 }
