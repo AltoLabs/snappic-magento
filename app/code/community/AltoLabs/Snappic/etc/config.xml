@@ -50,6 +50,16 @@
     </global>
 
     <frontend>
+        <routers>
+            <snappic>
+                <use>standard</use>
+                <args>
+                    <module>AltoLabs_Snappic</module>
+                    <frontName>snappic</frontName>
+                </args>
+            </snappic>
+        </routers>
+        
         <events>
             <controller_action_predispatch_checkout_cart_add>
               <observers>
@@ -76,7 +86,7 @@
                 </snappic>
             </updates>
         </layout>
-    </frontend>
+	</frontend>
 
     <adminhtml>
         <events>
