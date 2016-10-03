@@ -1,18 +1,34 @@
 <?php
+/**
+ * This file is Copyright AltoLabs 2016.
+ *
+ * @category Mage
+ * @package  AltoLabs_Snappic
+ * @author   AltoLabs <hi@altolabs.co>
+ */
+
+/** @var Mage_Core_Model_Session $session */
 $session = Mage::getSingleton('core/session');
-$session->unsCartProductJustAdded()
-if ($session->getCartProductJustAdded() !== true) { return; }
+$session->unsCartProductJustAdded();
+
+if (true !== $session->getCartProductJustAdded()) {
+    return;
+}
 
 $id = Mage::getModel('altolabs_snappic/connect')->getFacebookId();
-if (!$id || $id == '') { return; }
+if (empty($id)) {
+    return;
+}
 
+/** @var Mage_Sales_Model_Quote $quote */
 $quote  = Mage::getSingleton('checkout/session')->getQuote();
 $items = $quote->getAllVisibleItems();
 $productIds = array();
-foreach($items as $item) {
-  $productIds[] = "'snappic_".$item->getProductId()."'";
+
+foreach ($items as $item) {
+    $productIds[] = "'snappic_" . $item->getProductId() . "'";
 }
-$productIds = join($productIds, ',');
+$productIds = implode(',', $productIds);
 ?>
 <script>
 if (typeof fbq !== 'function') {

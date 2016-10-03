@@ -1,8 +1,18 @@
 <?php
-$id = Mage::getModel('altolabs_snappic/connect')->getFacebookId();
-if (!$id || $id == '') { return; }
+/**
+ * This file is Copyright AltoLabs 2016.
+ *
+ * @category Mage
+ * @package  AltoLabs_Snappic
+ * @author   AltoLabs <hi@altolabs.co>
+ */
 
-$productId = 'snappic_'.Mage::registry('current_product')->getId();
+$id = Mage::getModel('altolabs_snappic/connect')->getFacebookId();
+if (empty($id) || !Mage::registry('current_product')) {
+    return;
+}
+
+$productId = 'snappic_' . Mage::registry('current_product')->getId();
 ?>
 <script>
 if (typeof fbq !== 'function') {
