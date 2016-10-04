@@ -13,7 +13,7 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract
      *
      * @var string
      */
-    const SNAPPIC_HOST = 'https://api.snappic.io';
+    const SNAPPIC_HOST = 'https://api.snappic-staging.tk';
 
     /**
      * The payload to send to the Snappic API.
