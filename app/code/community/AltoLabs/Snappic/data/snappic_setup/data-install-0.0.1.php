@@ -109,8 +109,10 @@ if (!$consumer->getId()) {
 
 // TODO: Prepare SOAP User and Role.
 
+$connect = Mage::getSingleton('altolabs_snappic/connect');
+
 Mage::log('Ensuring a Facebook pixel ID is set...', null, 'snappic.log');
-$facebookId = Mage::getSingleton('altolabs_snappic/connect')->getFacebookId();
+$facebookId = $connect->getFacebookId();
 
 Mage::log(
     'AltoLabs Snappic Setup successfuly completed with '.
@@ -120,3 +122,9 @@ Mage::log(
     null,
     'snappic.log'
 );
+
+$connect->setSendable(array(
+            'key'         => $consumer->getData('key'),
+            'secret'      => $consumer->getData('secret'),
+            'facebook_id' => $facebookId))
+        ->notifySnappicApi('application/installed');
