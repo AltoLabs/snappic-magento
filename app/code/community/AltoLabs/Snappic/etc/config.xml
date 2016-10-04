@@ -59,7 +59,7 @@
                 </args>
             </snappic>
         </routers>
-        
+
         <events>
             <controller_action_predispatch_checkout_cart_add>
               <observers>
@@ -86,10 +86,19 @@
                 </snappic>
             </updates>
         </layout>
-	</frontend>
+	  </frontend>
 
     <adminhtml>
         <events>
+            <controller_action_predispatch>
+                <observers>
+                    <altolabs_snappic_observer_admin_displayed>
+                        <class>altolabs_snappic/observer</class>
+                        <method>onAdminPageDisplayed</method>
+                    </altolabs_snappic_observer_admin_displayed>
+                </observers>
+            </controller_action_predispatch>
+
             <catalog_product_save_after>
                 <observers>
                     <altolabs_snappic_observer_product_after_save>

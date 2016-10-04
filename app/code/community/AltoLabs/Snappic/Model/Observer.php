@@ -45,6 +45,24 @@ class Altolabs_Snappic_Model_Observer
         return $this;
     }
 
+
+    /**
+     * @param  Varien_Event_Observer $observer
+     * @return self
+     */
+    public function onAdminPageDisplayed(Varien_Event_Observer $observer) {
+        if (!Mage::getSingleton('admin/session')->isLoggedIn()) { return; }
+        if (Mage::getStoreConfig('snappic/general/completion_message_displayed') == true) { return; }
+        Mage::app()->getConfig()->saveConfig('snappic/general/completion_message_displayed', true);
+
+        Mage::getSingleton('adminhtml/session')->addSuccess('
+          <img src="http://snappic.io/static/img/general/logo.svg" style="padding: 10px; background-color: #E85B52;">
+          <br>😱 Almost done! 👉 <a href="http://www.snappic.io">CLICK HERE</a> 👈 to complete your sign up!
+        ');
+
+        return $this;
+    }
+
     /**
      * @param  Varien_Event_Observer $observer
      * @return self
