@@ -4,8 +4,11 @@ class AltoLabs_Snappic_IndexController extends Mage_Core_Controller_Front_Action
     public function indexAction()
     {
         $this->loadLayout();
+        $soapUsername = 'Snappic';
+        $soapApiKey = Mage::getModel('api/user')->load($soapUsername, 'username')->getApiKey();
         $storeAssetsHost = Mage::helper('altolabs_snappic')->getStoreAssetsHost();
-        $html = "
+        $block = $this->getLayout()->createBlock('core/text');
+        $block->setText("
           <div style=\"width:100%;height:auto\"><snpc-main></snpc-main></div>
           <script>
             var SnappicOptions = {
@@ -19,12 +22,13 @@ class AltoLabs_Snappic_IndexController extends Mage_Core_Controller_Front_Action
               enable_infinite_scroll: true,
               enable_checkout_bar: true,
               enable_gallery: false,
-              enable_options: false
+              enable_options: false,
+              MAGENTO_API_USER: '$soapUsername',
+              MAGENTO_API_KEY: '$soapApiKey'
             };
           </script>
-          <script src=\"$storeAssetsHost/preview/scripts/app.js\" async></script>";
-        $block = $this->getLayout()->createBlock('core/text');
-        $block->setText($html);
+          <script src=\"$storeAssetsHost/preview/scripts/app.js\" async></script>
+        ");
         $this->getLayout()->getBlock('content')->append($block);
         $this->renderLayout();
     }
