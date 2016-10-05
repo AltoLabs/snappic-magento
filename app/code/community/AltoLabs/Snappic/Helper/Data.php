@@ -10,8 +10,8 @@
  */
 class AltoLabs_Snappic_Helper_Data extends Mage_Core_Helper_Abstract
 {
-    const API_HOST_DEFAULT = 'https://api.snappic-staging.tk';
-    const STORE_ASSETS_HOST_DEFAULT = 'http://store.snappic-staging.tk';
+    const API_HOST_DEFAULT = 'https://api.snappic.io';
+    const STORE_ASSETS_HOST_DEFAULT = 'http://store.snappic.io';
 
     public function getApiHost()
     {
