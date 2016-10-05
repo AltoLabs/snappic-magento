@@ -14,8 +14,9 @@
             <active>true</active>
             <codePool>community</codePool>
             <depends>
-                <Mage_Core />
                 <Mage_Catalog />
+                <Mage_Checkout />
+                <Mage_Core />
                 <Mage_Oauth />
             </depends>
         </AltoLabs_Snappic>
