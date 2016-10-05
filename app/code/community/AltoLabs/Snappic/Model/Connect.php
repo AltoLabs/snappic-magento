@@ -9,13 +9,6 @@
 class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract
 {
     /**
-     * Define the connection endpoints and connection details.
-     *
-     * @var string
-     */
-    const SNAPPIC_HOST = 'https://api.snappic-staging.tk';
-
-    /**
      * The payload to send to the Snappic API.
      *
      * @var mixed
@@ -30,15 +23,16 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract
      */
     public function notifySnappicApi($topic)
     {
-        Mage::log('Snappic: notifySnappicApi ' . self::SNAPPIC_HOST . '/magento/webhooks', null, 'snappic.log');
-        $client = new Zend_Http_Client(self::SNAPPIC_HOST . '/magento/webhooks');
+        $helper = $this->getHelper();
+        Mage::log('Snappic: notifySnappicApi ' . $helper->getApiHost() . '/magento/webhooks', null, 'snappic.log');
+        $client = new Zend_Http_Client($helper->getApiHost() . '/magento/webhooks');
         $client->setMethod(Zend_Http_Client::POST);
         $sendable = $this->seal($this->getSendable());
         $client->setRawData($sendable);
         $client->setHeaders(
             array(
                 'Content-type'                => 'application/json',
-                'X-Magento-Shop-Domain'       => $this->getHelper()->getStoreDomain(),
+                'X-Magento-Shop-Domain'       => $helper->getStoreDomain(),
                 'X-Magento-Topic'             => $topic,
                 'X-Magento-Webhook-Signature' => $this->signPayload($sendable),
             )
@@ -68,9 +62,9 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract
         if ($this->get('snappicStore')) {
              return $this->get('snappicStore');
         }
-
-        $domain = $this->getHelper()->getStoreDomain();
-        $client = new Zend_Http_Client(self::SNAPPIC_HOST . '/stores/current?domain=' . $domain);
+        $helper = $this->getHelper();
+        $domain = $helper->getStoreDomain();
+        $client = new Zend_Http_Client($helper->getApiHost() . '/stores/current?domain=' . $domain);
         $client->setMethod(Zend_Http_Client::GET);
         try {
             Mage::log('Querying facebook ID for ' . $domain . '...', null, 'snappic.log');

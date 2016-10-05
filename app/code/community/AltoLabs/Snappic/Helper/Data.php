@@ -10,6 +10,24 @@
  */
 class AltoLabs_Snappic_Helper_Data extends Mage_Core_Helper_Abstract
 {
+    const API_HOST_DEFAULT = 'https://api.snappic-staging.tk';
+    const STORE_ASSETS_HOST_DEFAULT = 'http://store.snappic-staging.tk';
+
+    public function getApiHost()
+    {
+        return $this->getEnvOrDefault('SNAPPIC_API_HOST', self::API_HOST_DEFAULT);
+    }
+
+    public function getStoreAssetsHost()
+    {
+        return $this->getEnvOrDefault('SNAPPIC_STORE_ASSETS_HOST', self::STORE_ASSETS_HOST_DEFAULT);
+    }
+
+    protected function getEnvOrDefault($key, $default=NULL)
+    {
+        return empty($val=getenv($key)) ? $default : $val;
+    }
+
     /**
      * @param Mage_Sales_Model_Order $order
      *
