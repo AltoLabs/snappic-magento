@@ -19,10 +19,10 @@ $oauthHelper = Mage::helper('oauth');
 /** @var AltoLabs_Snappic_Helper_Data */
 $connect = Mage::getSingleton('altolabs_snappic/connect');
 
-Mage::log('Checking for SOAP Snappic User...', null, SNAPPIC_LOG);
+Mage::log('Checking for SOAP user...', null, SNAPPIC_LOG);
 $apiUser = Mage::getModel('api/user')->load('Snappic', 'username');
 if (!$apiUser->getId()) {
-    Mage::log('SOAP User was not found, creating...', null, SNAPPIC_LOG);
+    Mage::log('Creating...', null, SNAPPIC_LOG);
     $apiKey = $oauthHelper->generateToken();
     $apiUser = Mage::getModel('api/user')
         ->setUsername('Snappic')
@@ -35,47 +35,81 @@ if (!$apiUser->getId()) {
         ->save();
 }
 
-Mage::log('Checking for SOAP Snappic Role...', null, SNAPPIC_LOG);
-$apiRole = Mage::getModel('api/role')->load('snappic', 'role_name');
-if (!$apiRole->getId()) {
-    Mage::log('SOAP Role was not found, creating...', null, SNAPPIC_LOG);
-    $apiRole = Mage::getModel('api/role')
-      ->setRoleName('snappic')
+Mage::log('Checking for SOAP parent role...', null, SNAPPIC_LOG);
+$apiParentRole = Mage::getModel('api/roles')->load('Snappic Role', 'role_name');
+if (!$apiParentRole->getId()) {
+    Mage::log('Creating...', null, SNAPPIC_LOG);
+    $apiParentRole = Mage::getModel('api/role')
+      ->setRoleName('Snappic Role')
       ->setRoleType('G')
-      ->setUserId($apiUser->getId())
       ->save();
 }
-Mage::log('Making sure the Snappic SOAP role is assigned to the Snappci SOAP user...', null, SNAPPIC_LOG);
-$apiUser->setRoleUserId($apiUser->getId())
-        ->saveRelations();
-
-
-Mage::log('Checking for the Snappic admin user...', null, SNAPPIC_LOG);
-$user = Mage::getModel('admin/user')->load('snappic', 'username');
-if (!$user->getId()) {
-    Mage::log('User was not found, creating...', null, SNAPPIC_LOG);
-    $user = Mage::getModel('admin/user')
-        ->setData(
-            array(
-                'username'  => 'snappic',
-                'firstname' => 'Snappic',
-                'lastname'  => 'Snappic',
-                'email'     => 'hi@snappic.io',
-                'password'  => $oauthHelper->generateToken(),
-                'is_active' => 1
-            )
-        )->save();
+Mage::log('Checking for SOAP user role...', null, SNAPPIC_LOG);
+$apiRole = Mage::getModel('api/roles')->load('Snappic', 'role_name');
+if (!$apiRole->getId()) {
+    Mage::log('Creating...', null, SNAPPIC_LOG);
+    $apiRole = Mage::getModel('api/role')
+      ->setRoleName('Snappic')
+      ->setParentId($apiParentRole->getId())
+      ->setUserId($apiUser->getId())
+      ->setRoleType('U')
+      ->save();
 }
 
-Mage::log('Checking for the Snappic Role...', null, SNAPPIC_LOG);
+$resources = array(
+  '__root__',
+  'cart',
+  'cart/shipping',
+  'cart/shipping/list',
+  'cart/product',
+  'cart/product/list',
+  'cart/product/remove',
+  'cart/product/update',
+  'cart/product/add',
+  'cart/license',
+  'cart/info',
+  'cart/totals',
+  'cart/create',
+  'catalog',
+  'catalog/product',
+  'catalog/product/downloadable_link',
+  'catalog/product/downloadable_link/list',
+  'catalog/product/info',
+  'catalog/product/attribute',
+  'catalog/product/attribute/info',
+  'catalog/product/attribute/set',
+  'catalog/product/attribute/set/list',
+  'catalog/product/attribute/read',
+  'catalog/product/option',
+  'catalog/product/option/list',
+  'catalog/product/option/types',
+  'catalog/product/option/value',
+  'catalog/product/option/value/info',
+  'catalog/product/option/value/list'
+);
+// TODO: The api_rule table is populated. but it's not enough. See
+// app/code/core/Mage/Adminhtml/controllers/Api/RoleController.php
+// to understand how they do it.
+Mage::getModel("api/rules")
+    ->setRoleId($apiRole->getId())
+    ->setResources($resources)
+    ->saveRel()
+    ->save();
+
+
+Mage::log('Checking for the admin user...', null, SNAPPIC_LOG);
+$user = Mage::getModel('admin/user')->load('admin', 'username');
+
+Mage::log('Checking for the Admin role...', null, SNAPPIC_LOG);
 /** @var Mage_Api2_Model_Global_Role $adminRole */
-$adminRole = Mage::getModel('api2/acl_global_role')->load('Snappic', 'role_name');
+$adminRole = Mage::getModel('api2/acl_global_role')->load('Admin', 'role_name');
 if (!$adminRole->getId()) {
     Mage::log('Role was not found, creating...', null, SNAPPIC_LOG);
     $adminRole = Mage::getModel('api2/acl_global_role')
-        ->setData(array('role_name' => 'Snappic'))
+        ->setData(array('role_name' => 'Admin'))
         ->save();
 }
+// TODO: Add $user to $adminRole.
 
 Mage::log('Configuring ACLs...', null, SNAPPIC_LOG);
 $adminRoleId = $adminRole->getId();
@@ -86,7 +120,7 @@ foreach (array('snappic_product', 'snappic_store') as $snappicResource) {
         continue;
     }
 
-    Mage::log("Allowing the Snappic Role to retrieve $snappicResource...", null, SNAPPIC_LOG);
+    Mage::log("Allowing the Admin to retrieve $snappicResource...", null, SNAPPIC_LOG);
     Mage::getModel('api2/acl_global_rule')
         ->setRoleId($adminRoleId)
         ->setResourceId($snappicResource)
