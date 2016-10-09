@@ -56,45 +56,46 @@ if (!$apiRole->getId()) {
       ->save();
 }
 
-$resources = array(
-  '__root__',
-  'cart',
-  'cart/shipping',
-  'cart/shipping/list',
-  'cart/product',
-  'cart/product/list',
-  'cart/product/remove',
-  'cart/product/update',
-  'cart/product/add',
-  'cart/license',
-  'cart/info',
-  'cart/totals',
-  'cart/create',
-  'catalog',
-  'catalog/product',
-  'catalog/product/downloadable_link',
-  'catalog/product/downloadable_link/list',
-  'catalog/product/info',
-  'catalog/product/attribute',
-  'catalog/product/attribute/info',
-  'catalog/product/attribute/set',
-  'catalog/product/attribute/set/list',
-  'catalog/product/attribute/read',
-  'catalog/product/option',
-  'catalog/product/option/list',
-  'catalog/product/option/types',
-  'catalog/product/option/value',
-  'catalog/product/option/value/info',
-  'catalog/product/option/value/list'
-);
-// TODO: The api_rule table is populated. but it's not enough. See
-// app/code/core/Mage/Adminhtml/controllers/Api/RoleController.php
-// to understand how they do it.
-Mage::getModel("api/rules")
-    ->setRoleId($apiRole->getId())
-    ->setResources($resources)
-    ->saveRel()
-    ->save();
+# TODO: The api_rule table is populated. but it's not enough. See
+# app/code/core/Mage/Adminhtml/controllers/Api/RoleController.php
+# to understand how they do it. The following code fails somehow,
+# even tho things seem to be created in the database.
+// $resources = array(
+//   '__root__',
+//   'cart',
+//   'cart/shipping',
+//   'cart/shipping/list',
+//   'cart/product',
+//   'cart/product/list',
+//   'cart/product/remove',
+//   'cart/product/update',
+//   'cart/product/add',
+//   'cart/license',
+//   'cart/info',
+//   'cart/totals',
+//   'cart/create',
+//   'catalog',
+//   'catalog/product',
+//   'catalog/product/downloadable_link',
+//   'catalog/product/downloadable_link/list',
+//   'catalog/product/info',
+//   'catalog/product/attribute',
+//   'catalog/product/attribute/info',
+//   'catalog/product/attribute/set',
+//   'catalog/product/attribute/set/list',
+//   'catalog/product/attribute/read',
+//   'catalog/product/option',
+//   'catalog/product/option/list',
+//   'catalog/product/option/types',
+//   'catalog/product/option/value',
+//   'catalog/product/option/value/info',
+//   'catalog/product/option/value/list'
+// );
+// Mage::getModel("api/rules")
+//     ->setRoleId($apiRole->getId())
+//     ->setResources($resources)
+//     ->saveRel()
+//     ->save();
 
 
 Mage::log('Checking for the admin user...', null, SNAPPIC_LOG);
@@ -109,17 +110,13 @@ if (!$adminRole->getId()) {
         ->setData(array('role_name' => 'Admin'))
         ->save();
 }
-// TODO: Add $user to $adminRole.
+# TODO: Add $user to $adminRole.
 
 Mage::log('Configuring ACLs...', null, SNAPPIC_LOG);
 $adminRoleId = $adminRole->getId();
 foreach (array('snappic_product', 'snappic_store') as $snappicResource) {
     $globalRule = Mage::getModel('api2/acl_global_rule')->load($snappicResource, 'resource_id');
-
-    if ($globalRule->getId()) {
-        continue;
-    }
-
+    if ($globalRule->getId()) { continue; }
     Mage::log("Allowing the Admin to retrieve $snappicResource...", null, SNAPPIC_LOG);
     Mage::getModel('api2/acl_global_rule')
         ->setRoleId($adminRoleId)
