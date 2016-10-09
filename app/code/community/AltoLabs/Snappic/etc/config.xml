@@ -11,7 +11,7 @@
 <config>
     <modules>
         <AltoLabs_Snappic>
-            <version>0.0.1</version>
+            <version>0.0.2</version>
         </AltoLabs_Snappic>
     </modules>
 
@@ -19,7 +19,16 @@
         <models>
             <altolabs_snappic>
                 <class>AltoLabs_Snappic_Model</class>
+                <resourceModel>snappic_resource</resourceModel>
             </altolabs_snappic>
+            <snappic_resource>
+                <class>AltoLabs_Snappic_Model_Resource</class>
+                <entities>
+                    <session>
+                        <table>altolabs_snappic_session</table>
+                    </session>
+                </entities>
+            </snappic_resource>
         </models>
 
         <helpers>
@@ -47,6 +56,14 @@
                 </observers>
             </sales_order_place_after>
         </events>
+        <controller_action_predispatch>
+            <observers>
+                <altolabs_snappic_observer_quote_before>
+                    <class>altolabs_snappic/observer</class>
+                    <method>createCustomerSession</method>
+                </altolabs_snappic_observer_quote_before>
+            </observers>
+        </controller_action_predispatch>
     </global>
 
     <frontend>

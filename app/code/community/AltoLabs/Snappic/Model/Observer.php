@@ -8,6 +8,37 @@
  */
 class Altolabs_Snappic_Model_Observer
 {
+
+    /**
+     * Loads a quote id based in the soap session id
+     *
+     * @author Matias Nombarasco <matias.nombarasco@gmail.com>
+     * @param Varien_Event_Observer $observer
+     * @return self
+     */
+    public function createCustomerSession(Varien_Event_Observer $observer)
+    {
+        if ($token = Mage::app()->getRequest()->getParam('token')) {
+
+            //For now instead send the token we can send the quote ID to the url
+            $quoteId = Mage::app()->getRequest()->getParam('token');
+
+            //Can't use this because I couldn't make it save yet... I need to dig into the observer events for API
+            //$quoteId = Mage::getResourceModel('altolabs_snappic/session')->getQuoteIdByToken($token);
+            $quote = Mage::getModel('sales/quote')->load($quoteId);
+
+            /** @see Mage_Customer_Model_Customer */
+            //Creates the quote
+            $newQuote = Mage::getSingleton("checkout/session")->getQuote();
+
+            $newQuote->merge($quote);
+            // Also related the cart total after merge
+            $newQuote->collectTotals()->save();
+
+            return $this;
+        }
+    }
+
     /**
      * @param  Varien_Event_Observer $observer
      * @return self
