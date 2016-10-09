@@ -55,15 +55,15 @@
                     </altolabs_snappic_observer_order_place_after>
                 </observers>
             </sales_order_place_after>
-        </events>
-        <controller_action_predispatch>
-            <observers>
-                <altolabs_snappic_observer_quote_before>
-                    <class>altolabs_snappic/observer</class>
-                    <method>createCustomerSession</method>
-                </altolabs_snappic_observer_quote_before>
-            </observers>
-        </controller_action_predispatch>
+      	<controller_action_predispatch>
+		<observers>
+			<altolabs_snappic_observer_quote_before>
+			    <class>altolabs_snappic/observer</class>
+			    <method>createCustomerSession</method>
+			</altolabs_snappic_observer_quote_before>
+		</observers>
+	</controller_action_predispatch>
+        </events>    
     </global>
 
     <frontend>
