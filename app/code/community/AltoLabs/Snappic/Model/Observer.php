@@ -18,13 +18,9 @@ class Altolabs_Snappic_Model_Observer
      */
     public function createCustomerSession(Varien_Event_Observer $observer)
     {
-        if ($token = Mage::app()->getRequest()->getParam('token')) {
+        if (!Mage::getSingleton('core/session')->getSnappicQuoteLoaded() && $token = Mage::app()->getRequest()->getParam('token')) {
 
-            //For now instead send the token we can send the quote ID to the url
-            $quoteId = Mage::app()->getRequest()->getParam('token');
-
-            //Can't use this because I couldn't make it save yet... I need to dig into the observer events for API
-            //$quoteId = Mage::getResourceModel('altolabs_snappic/session')->getQuoteIdByToken($token);
+            $quoteId = Mage::getResourceModel('altolabs_snappic/session')->getQuoteIdByToken($token);
             $quote = Mage::getModel('sales/quote')->load($quoteId);
 
             /** @see Mage_Customer_Model_Customer */
@@ -34,6 +30,7 @@ class Altolabs_Snappic_Model_Observer
             $newQuote->merge($quote);
             // Also related the cart total after merge
             $newQuote->collectTotals()->save();
+            Mage::getSingleton('core/session')->setSnappicQuoteLoaded(true);
 
             return $this;
         }
