@@ -30,8 +30,8 @@ class AltoLabs_Snappic_IndexController extends Mage_Core_Controller_Front_Action
             enable_checkout_bar: true,
             enable_gallery: false,
             enable_options: false,
-            MAGENTO_API_USER: '$soapUsername',
-            MAGENTO_API_KEY: '$soapApiKey'
+            magento_api_user: '$soapUsername',
+            magento_api_key: '$soapApiKey'
           };
         </script>
         <script src=\"$storeAssetsHost/preview/scripts/app.js\" async></script>
