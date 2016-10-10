@@ -85,6 +85,7 @@ class AltoLabs_Snappic_Helper_Data extends Mage_Core_Helper_Abstract
             'title'       => $product->getName(),
             'description' => $product->getDescription(),
             'price'       => $product->getPrice(),
+            'quantity'    => $this->getQuantityForProduct($product),
             'handle'      => $product->getUrlKey(),
             'updated_at'  => $product->getUpdatedAt(),
             'variants'    => $this->getSendableVariantsData($product),
@@ -113,12 +114,27 @@ class AltoLabs_Snappic_Helper_Data extends Mage_Core_Helper_Abstract
                     'title'      => $subProduct->getName(),
                     'sku'        => $subProduct->getSku(),
                     'price'      => $subProduct->getPrice(),
+                    'quantity'   => $this->getQuantityForProduct($subProduct),
                     'updated_at' => $subProduct->getUpdatedAt()
                 );
             }
         }
 
         return $sendable;
+    }
+
+    /**
+     * @param  Mage_Catalog_Model_Product $product
+     * @return Integer
+     */
+    protected function getQuantityForProduct(Mage_Catalog_Model_Product $product)
+    {
+        $stockItem = $product->getStockItem();
+        if ($stockItem) {
+            return $stockItem->getIsInStock() ? 99 : 0;
+        } else {
+            return 99;
+        }
     }
 
     /**
