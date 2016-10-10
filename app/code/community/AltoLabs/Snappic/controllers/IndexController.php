@@ -13,7 +13,7 @@ class AltoLabs_Snappic_IndexController extends Mage_Core_Controller_Front_Action
     protected function pageHtml()
     {
       $soapUsername = 'Snappic';
-      $soapApiKey = Mage::getModel('api/user')->load($soapUsername, 'username')->getApiKey();
+      $soapApiKey = Mage::helper('altolabs_snappic')->getSoapApiKey();
       $storeAssetsHost = Mage::helper('altolabs_snappic')->getStoreAssetsHost();
       return "
         <div style=\"width:100%;height:auto\"><snpc-main></snpc-main></div>
