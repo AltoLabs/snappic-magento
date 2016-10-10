@@ -72,7 +72,7 @@
                 <attributes>
                     <name>Name</name>
                     <store_group_name>Store group name</store_group_name>
-                    <store_domain>Store domain</store_domain>
+                    <domain>Domain</domain>
                     <iana_timezone>IANA timezone</iana_timezone>
                     <currency>Currency</currency>
                     <money_with_currency_format>Money with currency format</money_with_currency_format>

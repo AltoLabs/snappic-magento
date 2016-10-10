@@ -171,7 +171,7 @@ class AltoLabs_Snappic_Helper_Data extends Mage_Core_Helper_Abstract
      * Gets the domain for the current store.
      * @return string
      */
-    public function getStoreDomain()
+    public function getDomain()
     {
         $url = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_LINK);
         $components = parse_url($url);

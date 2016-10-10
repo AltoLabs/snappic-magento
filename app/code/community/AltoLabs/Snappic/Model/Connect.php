@@ -32,7 +32,7 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract
         $client->setHeaders(
             array(
                 'Content-type'                => 'application/json',
-                'X-Magento-Shop-Domain'       => $helper->getStoreDomain(),
+                'X-Magento-Shop-Domain'       => $helper->getDomain(),
                 'X-Magento-Topic'             => $topic,
                 'X-Magento-Webhook-Signature' => $this->signPayload($sendable),
             )
@@ -63,7 +63,7 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract
              return $this->get('snappicStore');
         }
         $helper = $this->getHelper();
-        $domain = $helper->getStoreDomain();
+        $domain = $helper->getDomain();
         $client = new Zend_Http_Client($helper->getApiHost() . '/stores/current?domain=' . $domain);
         $client->setMethod(Zend_Http_Client::GET);
         try {
