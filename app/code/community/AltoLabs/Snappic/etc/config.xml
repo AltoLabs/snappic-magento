@@ -55,15 +55,15 @@
                     </altolabs_snappic_observer_order_place_after>
                 </observers>
             </sales_order_place_after>
+            <controller_action_predispatch>
+                <observers>
+                    <altolabs_snappic_observer_quote_before>
+                        <class>altolabs_snappic/observer</class>
+                        <method>createCustomerSession</method>
+                    </altolabs_snappic_observer_quote_before>
+                </observers>
+            </controller_action_predispatch>
         </events>
-        <controller_action_predispatch>
-            <observers>
-                <altolabs_snappic_observer_quote_before>
-                    <class>altolabs_snappic/observer</class>
-                    <method>createCustomerSession</method>
-                </altolabs_snappic_observer_quote_before>
-            </observers>
-        </controller_action_predispatch>
     </global>
 
     <frontend>
@@ -86,12 +86,12 @@
 
         <events>
             <controller_action_predispatch_checkout_cart_add>
-              <observers>
-                  <altolabs_snappic_observer_checkout_cart_add>
-                      <class>altolabs_snappic/observer</class>
-                      <method>onAfterProductAddToCart</method>
-                  </altolabs_snappic_observer_checkout_cart_add>
-              </observers>
+                <observers>
+                    <altolabs_snappic_observer_checkout_cart_add>
+                        <class>altolabs_snappic/observer</class>
+                        <method>onAfterProductAddToCart</method>
+                    </altolabs_snappic_observer_checkout_cart_add>
+                </observers>
             </controller_action_predispatch_checkout_cart_add>
             <controller_action_predispatch>
                 <observers>
@@ -110,7 +110,7 @@
                 </snappic>
             </updates>
         </layout>
-	  </frontend>
+    </frontend>
 
     <adminhtml>
         <events>
@@ -155,7 +155,7 @@
     <phpunit>
         <suite>
             <modules>
-                <AltoLabs_Snappic />
+                <AltoLabs_Snappic/>
             </modules>
         </suite>
     </phpunit>
