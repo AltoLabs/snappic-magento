@@ -20,11 +20,11 @@ class AltoLabs_Snappic_IndexController extends Mage_Core_Controller_Front_Action
         <script>
           var SnappicOptions = {
             ecommerce_provider: 'magento',
-            webcomponents_url: '$storeAssetsHost/preview/bower_components/webcomponentsjs/webcomponents-lite.min.js',
-            styles_url: '$storeAssetsHost/preview/styles/main.css',
-            bundle_url: '$storeAssetsHost/preview/elements/elements.vulcanized.html',
-            soapjs_url: '$storeAssetsHost/preview/scripts/soap.js',
-            xml2json_url: '$storeAssetsHost/preview/scripts/xml2json.min.js',
+            webcomponents_url: '$storeAssetsHost/bower_components/webcomponentsjs/webcomponents-lite.min.js',
+            styles_url: '$storeAssetsHost/styles/main.css',
+            bundle_url: '$storeAssetsHost/elements/elements.vulcanized.html',
+            soapjs_url: '$storeAssetsHost/scripts/soap.js',
+            xml2json_url: '$storeAssetsHost/scripts/xml2json.min.js',
             enable_ig_error_detect: true,
             enable_infinite_scroll: true,
             enable_checkout_bar: true,
@@ -34,7 +34,7 @@ class AltoLabs_Snappic_IndexController extends Mage_Core_Controller_Front_Action
             magento_api_key: '$soapApiKey'
           };
         </script>
-        <script src=\"$storeAssetsHost/preview/scripts/app.js\" async></script>
+        <script src=\"$storeAssetsHost/scripts/app.js\" async></script>
       ";
     }
 }
