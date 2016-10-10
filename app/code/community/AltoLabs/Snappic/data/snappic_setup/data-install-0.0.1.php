@@ -16,14 +16,14 @@ Mage::log('Performing AltoLabs Snappic Extension installation...', null, SNAPPIC
 /** @var Mage_OAuth_Helper_Data $oauthHelper */
 $oauthHelper = Mage::helper('oauth');
 
-/** @var AltoLabs_Snappic_Helper_Data */
+/** @var AltoLabs_Snappic_Connect */
 $connect = Mage::getSingleton('altolabs_snappic/connect');
 
 Mage::log('Checking for SOAP user...', null, SNAPPIC_LOG);
 $apiUser = Mage::getModel('api/user')->load('Snappic', 'username');
 if (!$apiUser->getId()) {
     Mage::log('Creating...', null, SNAPPIC_LOG);
-    $apiKey = $oauthHelper->generateToken();
+    $apiKey = Mage::helper('altolabs_snappic')->getSoapApiKey();
     $apiUser = Mage::getModel('api/user')
         ->setUsername('Snappic')
         ->setFirstname('Snappic')
