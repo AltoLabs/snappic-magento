@@ -23,7 +23,7 @@ class AltoLabs_Snappic_Model_Api2_Snappic_Store_Rest_Admin_V1 extends AltoLabs_S
         // Add custom paramaters
         $store->setId((int) $store->getId())
             ->setName($store->getGroup()->getName())
-            ->setStoreDomain($this->getHelper()->getStoreDomain())
+            ->setDomain($this->getHelper()->getDomain())
             ->setIanaTimezone($this->_getIanaTimezone($store))
             ->setCurrency($store->getBaseCurrencyCode($store))
             ->setMoneyWithCurrencyFormat($this->_getMoneyWithCurrencyFormat($store));

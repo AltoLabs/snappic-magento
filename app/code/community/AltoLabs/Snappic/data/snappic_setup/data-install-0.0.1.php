@@ -127,7 +127,7 @@ foreach (array('snappic_product', 'snappic_store') as $snappicResource) {
 
 # TODO: If the current ACL is "All", don't do this.
 $aclsByResource = array(
-  'snappic_store'   => 'name,store_group_name,store_domain,iana_timezone,currency,money_with_currency_format',
+  'snappic_store'   => 'name,store_group_name,domain,iana_timezone,currency,money_with_currency_format',
   'snappic_product' => 'id,title,description,price,handle,updated_at,variants,images,options'
 );
 foreach ($aclsByResource as $resource => $attributes) {
