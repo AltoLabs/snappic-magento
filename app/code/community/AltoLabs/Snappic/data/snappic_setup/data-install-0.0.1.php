@@ -57,46 +57,43 @@ if (!$apiRole->getId()) {
       ->save();
 }
 
-# TODO: The api_rule table is populated. but it's not enough. See
-# app/code/core/Mage/Adminhtml/controllers/Api/RoleController.php
-# to understand how they do it. The following code fails somehow,
-# even tho things seem to be created in the database.
-// $resources = array(
-//   '__root__',
-//   'cart',
-//   'cart/shipping',
-//   'cart/shipping/list',
-//   'cart/product',
-//   'cart/product/list',
-//   'cart/product/remove',
-//   'cart/product/update',
-//   'cart/product/add',
-//   'cart/license',
-//   'cart/info',
-//   'cart/totals',
-//   'cart/create',
-//   'catalog',
-//   'catalog/product',
-//   'catalog/product/downloadable_link',
-//   'catalog/product/downloadable_link/list',
-//   'catalog/product/info',
-//   'catalog/product/attribute',
-//   'catalog/product/attribute/info',
-//   'catalog/product/attribute/set',
-//   'catalog/product/attribute/set/list',
-//   'catalog/product/attribute/read',
-//   'catalog/product/option',
-//   'catalog/product/option/list',
-//   'catalog/product/option/types',
-//   'catalog/product/option/value',
-//   'catalog/product/option/value/info',
-//   'catalog/product/option/value/list'
-// );
-// Mage::getModel("api/rules")
-//     ->setRoleId($apiRole->getId())
-//     ->setResources($resources)
-//     ->saveRel()
-//     ->save();
+ $resources = array(
+   '__root__',
+   'cart',
+   'cart/shipping',
+   'cart/shipping/list',
+   'cart/product',
+   'cart/product/list',
+   'cart/product/remove',
+   'cart/product/update',
+   'cart/product/add',
+   'cart/license',
+   'cart/info',
+   'cart/totals',
+   'cart/create',
+   'catalog',
+   'catalog/product',
+   'catalog/product/downloadable_link',
+   'catalog/product/downloadable_link/list',
+   'catalog/product/info',
+   'catalog/product/attribute',
+   'catalog/product/attribute/info',
+   'catalog/product/attribute/set',
+   'catalog/product/attribute/set/list',
+   'catalog/product/attribute/read',
+   'catalog/product/option',
+   'catalog/product/option/list',
+   'catalog/product/option/types',
+   'catalog/product/option/value',
+   'catalog/product/option/value/info',
+   'catalog/product/option/value/list'
+ );
+
+ Mage::getModel("api/rules")
+     ->setRoleId($apiParentRole->getId())
+     ->setResources($resources)
+     ->saveRel()
+     ->save();
 
 
 Mage::log('Checking for the admin user...', null, 'snappic.log');
