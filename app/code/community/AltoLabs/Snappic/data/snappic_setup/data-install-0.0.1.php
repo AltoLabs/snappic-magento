@@ -106,7 +106,7 @@ if (!$adminRole->getId()) {
         ->setData(array('role_name' => 'Admin'))
         ->save();
 }
-# TODO: Add $user to $adminRole.
+# TODO: Add $user to the $adminRole REST role.
 
 Mage::log('Configuring ACLs...', null, 'snappic.log');
 $adminRoleId = $adminRole->getId();
