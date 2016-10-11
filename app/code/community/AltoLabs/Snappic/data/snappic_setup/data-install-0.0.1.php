@@ -97,7 +97,7 @@ if (!$apiRole->getId()) {
 Mage::log('Checking for the admin user...', null, 'snappic.log');
 $user = Mage::getModel('admin/user')->load('admin', 'username');
 
-Mage::log('Checking for the Admin role...', null, 'snappic.log');
+Mage::log('Checking for the REST Admin role...', null, 'snappic.log');
 /** @var Mage_Api2_Model_Global_Role $adminRole */
 $adminRole = Mage::getModel('api2/acl_global_role')->load('Admin', 'role_name');
 if (!$adminRole->getId()) {
@@ -108,14 +108,13 @@ if (!$adminRole->getId()) {
 }
 # TODO: Add $user to the $adminRole REST role.
 
-Mage::log('Configuring ACLs...', null, 'snappic.log');
-$adminRoleId = $adminRole->getId();
+Mage::log('Configuring REST ACL Rules...', null, 'snappic.log');
 foreach (array('snappic_product', 'snappic_store') as $snappicResource) {
     $globalRule = Mage::getModel('api2/acl_global_rule')->load($snappicResource, 'resource_id');
     if ($globalRule->getId()) { continue; }
     Mage::log("Allowing the Admin to retrieve $snappicResource...", null, 'snappic.log');
     Mage::getModel('api2/acl_global_rule')
-        ->setRoleId($adminRoleId)
+        ->setRoleId($adminRole->getId())
         ->setResourceId($snappicResource)
         ->setPrivilege('retrieve')
         ->save();
