@@ -25,7 +25,7 @@ class AltoLabs_Snappic_Helper_Data extends Mage_Core_Helper_Abstract
 
     protected function getEnvOrDefault($key, $default=NULL)
     {
-        $val=getenv($key);
+        $val = getenv($key);
         return empty($val) ? $default : $val;
     }
 
