@@ -31,7 +31,8 @@ class AltoLabs_Snappic_IndexController extends Mage_Core_Controller_Front_Action
             enable_gallery: false,
             enable_options: false,
             magento_api_user: '$soapUsername',
-            magento_api_key: '$soapApiKey'
+            magento_api_key: '$soapApiKey',
+            magento_api_storeid: " . Mage::app()->getStore()->getStoreId() . "
           };
         </script>
         <script src=\"$storeAssetsHost/scripts/app.js\" async></script>

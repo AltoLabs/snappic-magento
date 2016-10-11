@@ -20,7 +20,8 @@ class Altolabs_Snappic_Model_Observer
     {
         if (!Mage::getSingleton('core/session')->getSnappicQuoteLoaded() && $token = Mage::app()->getRequest()->getParam('token')) {
 
-            $quoteId = Mage::getResourceModel('altolabs_snappic/session')->getQuoteIdByToken($token);
+            //$quoteId = Mage::getResourceModel('altolabs_snappic/session')->getQuoteIdByToken($token);
+            $quoteId = $token;
             $quote = Mage::getModel('sales/quote')->load($quoteId);
 
             /** @see Mage_Customer_Model_Customer */
