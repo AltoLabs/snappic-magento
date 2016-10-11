@@ -15,6 +15,7 @@ class AltoLabs_Snappic_IndexController extends Mage_Core_Controller_Front_Action
       $soapUsername = 'Snappic';
       $soapApiKey = Mage::helper('altolabs_snappic')->getSoapApiKey();
       $storeAssetsHost = Mage::helper('altolabs_snappic')->getStoreAssetsHost();
+      $storeId = Mage::app()->getStore()->getStoreId();
       return "
         <div style=\"width:100%;height:auto\"><snpc-main></snpc-main></div>
         <script>
@@ -32,7 +33,7 @@ class AltoLabs_Snappic_IndexController extends Mage_Core_Controller_Front_Action
             enable_options: false,
             magento_api_user: '$soapUsername',
             magento_api_key: '$soapApiKey',
-            magento_api_storeid: " . Mage::app()->getStore()->getStoreId() . "
+            magento_api_storeid: '$storeId'
           };
         </script>
         <script src=\"$storeAssetsHost/scripts/app.js\" async></script>
