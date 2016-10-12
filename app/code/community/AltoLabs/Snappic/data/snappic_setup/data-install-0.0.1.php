@@ -62,14 +62,12 @@ if (!$apiRole->getId()) {
    'cataloginventory/info',
    'cart',
    'cart/create',
-   'cart/info',
    'cart/totals',
-   'cart/license',
    'cart/product',
    'cart/product/add',
-   'cart/product/update',
-   'cart/product/remove',
-   'cart/product/list'
+   'cart/customer',
+   'cart/customer/set',
+   'cart/customer/addresses'
  );
 
  Mage::getModel("api/rules")
@@ -167,19 +165,10 @@ if (!$consumer->getId()) {
 Mage::log('Ensuring a Facebook pixel ID is set...', null, 'snappic.log');
 $facebookId = $connect->getFacebookId();
 
-Mage::log(
-    'AltoLabs Snappic Setup successfuly completed with '.
-    'Key=' . $consumer->getData('key') . ', ' .
-    'Secret=' . $consumer->getData('secret') . ', ' .
-    'FacebookId=' . $facebookId,
-    null,
-    'snappic.log'
-);
-
-$connect->setSendable(array(
-            'key'         => $consumer->getData('key'),
-            'secret'      => $consumer->getData('secret'),
-            'facebook_id' => $facebookId))
+$key = $consumer->getKey();
+$secret = $consumer->getSecret();
+Mage::log("AltoLabs Snappic Setup successfuly completed with Key=$key, Secret=$secret, FacebookId=$facebookId", null, 'snappic.log');
+$connect->setSendable(array('key' => $key, 'secret' => $secret, 'facebook_id' => $facebookId))
         ->notifySnappicApi('application/installed');
 
 $installer->endSetup();
