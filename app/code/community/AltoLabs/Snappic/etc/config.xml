@@ -68,13 +68,13 @@
 
     <frontend>
         <routers>
-            <snappic>
+            <shopinsta>
                 <use>standard</use>
                 <args>
                     <module>AltoLabs_Snappic</module>
-                    <frontName>snappic</frontName>
+                    <frontName>shopinsta</frontName>
                 </args>
-            </snappic>
+            </shopinsta>
             <checkout>
                 <args>
                     <modules>
