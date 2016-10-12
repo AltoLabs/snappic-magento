@@ -8,36 +8,6 @@
  */
 class Altolabs_Snappic_Model_Observer
 {
-
-    /**
-     * Loads a quote id based in the soap session id
-     *
-     * @author Matias Nombarasco <matias.nombarasco@gmail.com>
-     * @param Varien_Event_Observer $observer
-     * @return self
-     */
-    public function createCustomerSession(Varien_Event_Observer $observer)
-    {
-        if (!Mage::getSingleton('core/session')->getSnappicQuoteLoaded() && $token = Mage::app()->getRequest()->getParam('token')) {
-
-            //$quoteId = Mage::getResourceModel('altolabs_snappic/session')->getQuoteIdByToken($token);
-            $quoteId = $token;
-            $quote = Mage::getModel('sales/quote')->load($quoteId);
-
-            /** @see Mage_Customer_Model_Customer */
-            //Creates the quote
-            $newQuote = Mage::getSingleton("checkout/session")->getQuote();
-
-            $newQuote->merge($quote);
-            // Also related the cart total after merge
-            $newQuote->collectTotals()->save();
-            Mage::getSingleton('core/session')->setSnappicQuoteLoaded(true);
-            //Redirects to the cart to prevent the total 0 issue
-            Mage::app()->getResponse()->setRedirect(Mage::getUrl("checkout/cart"));
-            return $this;
-        }
-    }
-
     /**
      * @param  Varien_Event_Observer $observer
      * @return self
