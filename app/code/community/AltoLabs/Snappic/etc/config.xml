@@ -75,13 +75,6 @@
                     <frontName>shopinsta</frontName>
                 </args>
             </shopinsta>
-            <checkout>
-                <args>
-                    <modules>
-                        <AltoLabs_Snappic before="Mage_Checkout">AltoLabs_Snappic_Checkout</AltoLabs_Snappic>
-                    </modules>
-                </args>
-            </checkout>
         </routers>
 
         <events>

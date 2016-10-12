@@ -15,7 +15,6 @@
             <codePool>community</codePool>
             <depends>
                 <Mage_Catalog />
-                <Mage_Checkout />
                 <Mage_Core />
                 <Mage_Oauth />
             </depends>
