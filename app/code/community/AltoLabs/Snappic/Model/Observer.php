@@ -183,9 +183,10 @@ class Altolabs_Snappic_Model_Observer
     protected function _ensureLandingPageStored()
     {
         $session = Mage::getSingleton('core/session');
+        $url = Mage::helper('core/url')->getCurrentUrl();
         $landingPage = $session->getLandingPage();
-        if (!$landingPage) {
-            $session->setLandingPage(Mage::helper('core/url')->getCurrentUrl());
+        if (!$landingPage || strpos($url, '/shopinsta') !== false) {
+            $session->setLandingPage($url);
         }
         return $session->getLandingPage();
     }
