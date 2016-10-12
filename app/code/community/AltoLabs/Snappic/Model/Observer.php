@@ -32,7 +32,8 @@ class Altolabs_Snappic_Model_Observer
             // Also related the cart total after merge
             $newQuote->collectTotals()->save();
             Mage::getSingleton('core/session')->setSnappicQuoteLoaded(true);
-
+            //Redirects to the cart to prevent the total 0 issue
+            Mage::app()->getResponse()->setRedirect(Mage::getUrl("checkout/cart"));
             return $this;
         }
     }
