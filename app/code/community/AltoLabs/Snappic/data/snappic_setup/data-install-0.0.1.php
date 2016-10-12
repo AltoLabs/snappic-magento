@@ -81,6 +81,18 @@ if (!$apiRole->getId()) {
 
 Mage::log('Checking for the admin user...', null, 'snappic.log');
 $user = Mage::getModel('admin/user')->load('admin', 'username');
+// In future versions, we'll dedicate a Snappic REST user with a REST Snappic role.
+// $user = Mage::getModel('admin/user')->load('snappic', 'username');
+// if (!$user->getId()) {
+//     Mage::Log('User was not found, creating...', null, 'snappic.log');
+//     $user = Mage::getModel('admin/user')
+//         ->setEmail('hi@snappic.io')
+//         ->setUsername('snappic')
+//         ->setFirstname('Snappic')
+//         ->setLastname('Snappic')
+//         ->setIsActive(true)
+//         ->save();
+// }
 
 Mage::log('Checking for the REST Admin role...', null, 'snappic.log');
 /** @var Mage_Api2_Model_Global_Role $adminRole */
