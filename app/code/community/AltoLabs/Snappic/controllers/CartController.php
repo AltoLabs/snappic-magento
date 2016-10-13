@@ -11,7 +11,7 @@ class AltoLabs_Snappic_CartController extends Mage_Core_Controller_Front_Action
 {
     public function totalAction()
     {
-        return $this->output($this->_getCart()->getQuote()->getGrandTotal());
+        return $this->_output($this->_getCart()->getQuote()->getGrandTotal());
     }
 
     public function addAction()
@@ -27,11 +27,11 @@ class AltoLabs_Snappic_CartController extends Mage_Core_Controller_Front_Action
                 $cart->save();
                 $this->_getSession()->setCartWasUpdated(true);
             } catch (Exception $e) {
-                return $this->output(array('error' => $e->getMessage()));
+                return $this->_output(array('error' => $e->getMessage()));
             }
-            return $this->output('ok');
+            return $this->_output('ok');
         } else {
-            return $this->output(array('error' => 'The product was not found.'));
+            return $this->_output(array('error' => 'The product was not found.'));
         }
     }
 
@@ -52,7 +52,7 @@ class AltoLabs_Snappic_CartController extends Mage_Core_Controller_Front_Action
         return Mage::getSingleton('checkout/cart');
     }
 
-    protected function output($data)
+    protected function _output($data)
     {
         $this->getResponse()->setHeader('Content-type', 'application/json');
         $this->getResponse()->setBody(json_encode($data));

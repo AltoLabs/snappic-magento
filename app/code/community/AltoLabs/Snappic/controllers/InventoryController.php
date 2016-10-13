@@ -17,7 +17,7 @@ class AltoLabs_Snappic_InventoryController extends Mage_Core_Controller_Front_Ac
         foreach ($productIds as $productId) {
             $quantities[$productId] = $this->_getProductStockById($productId);
         }
-        return $this->output($quantities);
+        return $this->_output($quantities);
     }
 
     protected function _getPayload()
@@ -27,12 +27,17 @@ class AltoLabs_Snappic_InventoryController extends Mage_Core_Controller_Front_Ac
 
     protected function _getProductStockById($productId)
     {
-        $product = Mage::getModel('catalog/product')->load((int)$productId);
-        $stockItem = Mage::getModel('cataloginventory/stock_item')->loadByProduct($product);
-        return $stockItem->getManageStock() ? $stockItem->getQty() : 99;
+        try {
+          $stockItem = Mage::getModel('cataloginventory/stock_item')->loadByProduct(
+              Mage::getModel('catalog/product')->load($productId)
+          );
+          return $stockItem->getManageStock() ? $stockItem->getQty() : 99;
+        } catch (Exception $e) {
+          return 99;
+        }
     }
 
-    protected function output($data)
+    protected function _output($data)
     {
         $this->getResponse()->setHeader('Content-type', 'application/json');
         $this->getResponse()->setBody(json_encode($data));
