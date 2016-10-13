@@ -6,6 +6,7 @@
  * @package  AltoLabs_Snappic
  * @author   AltoLabs <hi@altolabs.co>
  */
+
 class Altolabs_Snappic_Model_Observer
 {
     /**

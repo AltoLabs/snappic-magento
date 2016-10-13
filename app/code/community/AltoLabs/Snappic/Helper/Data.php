@@ -1,13 +1,12 @@
 <?php
 /**
- * Helper to return appropriate payload structures for various input types.
- *
  * This file is Copyright AltoLabs 2016.
  *
  * @category Mage
  * @package  AltoLabs_Snappic
  * @author   AltoLabs <hi@altolabs.co>
  */
+
 class AltoLabs_Snappic_Helper_Data extends Mage_Core_Helper_Abstract
 {
     const API_HOST_DEFAULT = 'https://api.snappic.io';

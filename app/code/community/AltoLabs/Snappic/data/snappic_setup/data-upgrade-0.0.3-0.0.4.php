@@ -1,7 +1,5 @@
 <?php
 /**
- * This script takes care of storing a proper API key for the snappic frontend to use.
- *
  * This file is Copyright AltoLabs 2016.
  *
  * @category Mage
@@ -11,8 +9,5 @@
 
 $installer = $this;
 $installer->startSetup();
-
-# Commit #9161772 gets rid of the Session resource.
 $installer->run("DROP TABLE IF EXISTS altolabs_snappic_session;");
-
 $installer->endSetup();

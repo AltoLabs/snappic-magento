@@ -1,7 +1,5 @@
 <?php
-  /**
- * Installs the Snappic persistent session tables
- *
+/**
  * This file is Copyright AltoLabs 2016.
  *
  * @category Mage
@@ -12,7 +10,6 @@
 $installer = $this;
 $installer->startSetup();
 
-# Commit #9161772 gets rid of the Session resource.
 // $installer->run("
 //     DROP TABLE IF EXISTS {$installer->getTable('altolabs_snappic/session')};
 //     CREATE TABLE {$installer->getTable('altolabs_snappic/session')} (

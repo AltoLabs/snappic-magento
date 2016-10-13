@@ -6,6 +6,7 @@
  * @package  AltoLabs_Snappic
  * @author   AltoLabs <hi@altolabs.co>
  */
+
 class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract
 {
     /**
