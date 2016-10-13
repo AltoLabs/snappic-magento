@@ -38,6 +38,10 @@ class AltoLabs_Snappic_Helper_Data extends Mage_Core_Helper_Abstract
         return $apiKey;
     }
 
+    public function getAdminHtmlPath()
+    {
+        return (string)Mage::app()->getConfig()->getNode('admin/routers/adminhtml/args/frontName') ?: 'admin';
+    }
 
     /**
      * @param Mage_Sales_Model_Order $order
