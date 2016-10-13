@@ -1,7 +1,5 @@
 <?php
 /**
- * Installs the Snappic extension and creates necessary API rules for connections to and from the Snappic API
- *
  * This file is Copyright AltoLabs 2016.
  *
  * @category Mage

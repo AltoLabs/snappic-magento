@@ -1,4 +1,12 @@
 <?php
+/**
+ * This file is Copyright AltoLabs 2016.
+ *
+ * @category Mage
+ * @package  AltoLabs_Snappic
+ * @author   AltoLabs <hi@altolabs.co>
+ */
+
 class AltoLabs_Snappic_IndexController extends Mage_Core_Controller_Front_Action
 {
     public function indexAction()

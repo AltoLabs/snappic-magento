@@ -1,7 +1,5 @@
 <?php
 /**
- * This script takes care of storing a proper API key for the snappic frontend to use.
- *
  * This file is Copyright AltoLabs 2016.
  *
  * @category Mage
