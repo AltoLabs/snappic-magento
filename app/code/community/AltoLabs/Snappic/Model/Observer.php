@@ -53,12 +53,17 @@ class Altolabs_Snappic_Model_Observer
      */
     public function onAdminPageDisplayed(Varien_Event_Observer $observer) {
         if (!Mage::getSingleton('admin/session')->isLoggedIn()) { return; }
-
         if (Mage::getStoreConfig('snappic/general/completion_message_displayed') == true) { return; }
         Mage::app()->getConfig()->saveConfig('snappic/general/completion_message_displayed', true);
 
+        $helper = $this->getHelper();
         $consumer = Mage::getModel('oauth/consumer')->load('Snappic', 'name');
-        $link = 'http://www.snappic.io?key='.$consumer->getKey().'&secret='.$consumer->getSecret();
+        $link = 'http://www.snappic.io?'.
+                  'key='.urlencode($consumer->getKey()).'&'.
+                  'secret='.urlencode($consumer->getSecret()).'&'.
+                  'domain='.urlencode($helper->getDomain()).'&'.
+                  'admin_path='.urlencode($helper->getAdminHtmlPath());
+
         Mage::getSingleton('adminhtml/session')->addSuccess('
           <img src="http://snappic.io/static/img/general/logo.svg" style="padding: 10px; background-color: #E85B52;">
           <br>😱 Almost done! 👉 <a href="'.$link.'">CLICK HERE</a> 👈 to complete your sign up!

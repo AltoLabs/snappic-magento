@@ -23,7 +23,7 @@ $total = round($order->getGrandTotal(), 2);
 $currency = Mage::app()->getStore()->getCurrentCurrencyCode();
 
 $items = $items = $order->getAllVisibleItems();
-$productIds = [];
+$productIds = array();
 foreach ($items as $item) {
     $productIds[] = "'snappic_" . $item->getProductId() . "'";
 }
