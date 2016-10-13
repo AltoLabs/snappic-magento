@@ -57,13 +57,11 @@ class Altolabs_Snappic_Model_Observer
         Mage::app()->getConfig()->saveConfig('snappic/general/completion_message_displayed', true);
 
         $consumer = Mage::getModel('oauth/consumer')->load('Snappic', 'name');
-        $key = $consumer->getKey();
-        $secret = $consumer->getSecret();
-
-        Mage::getSingleton('adminhtml/session')->addSuccess("
-          <img src=\"http://snappic.io/static/img/general/logo.svg\" style=\"padding: 10px; background-color: #E85B52;\">
-          <br>😱 Almost done! 👉 <a href=\"http://www.snappic.io\">CLICK HERE</a> 👈 to complete your sign up!
-        ");
+        $link = 'http://www.snappic.io?key='.$consumer->getKey().'&secret='.$consumer->getSecret();
+        Mage::getSingleton('adminhtml/session')->addSuccess('
+          <img src="http://snappic.io/static/img/general/logo.svg" style="padding: 10px; background-color: #E85B52;">
+          <br>😱 Almost done! 👉 <a href="'.$link.'">CLICK HERE</a> 👈 to complete your sign up!
+        ');
 
         return $this;
     }
