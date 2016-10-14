@@ -10,57 +10,76 @@
 class AltoLabs_Snappic_CartController extends Mage_Core_Controller_Front_Action
 {
 
+    protected $_cookieCheckActions = array('add', 'total', 'clear');
+
+    public function preDispatch()
+    {
+        parent::preDispatch();
+        $cart = $this->_getCart();
+        if ($cart->getQuote()->getIsMultiShipping()) {
+            $cart->getQuote()->setIsMultiShipping(false);
+        }
+        return $this;
+    }
+
     public function totalAction()
     {
-        $quote = $this->_getCart()->getQuote();
-        return $this->_output(array(
+        $this->_output(array(
             'status' => 'success',
-            'total' => ($quote->getGrandTotal() ?: '0.00')
+            'total' => ($this->_getCart()->getQuote()->getSubtotal() ?: '0.00')
         ));
     }
 
     public function addAction()
     {
         $cart = $this->_getCart();
-        $quote = $cart->getQuote();
-        $core = Mage::helper('core');
-        $payload = $core->jsonDecode($this->getRequest()->getRawBody());
-        $sku = $payload['sku'];
-        $product = Mage::helper('altolabs_snappic')->getProductBySku($sku);
+        $payload = Mage::helper('core')->jsonDecode($this->getRequest()->getRawBody());
+        $product = Mage::helper('altolabs_snappic')
+                      ->getProductBySku($payload['sku'])
+                      ->setStoreId(Mage::app()->getStore()->getId());
         if ($product->getId()) {
             try {
-                $quote->addProduct($product);
+                $cart->addProduct($product);
+                if (!$cart->getCustomerSession()->getCustomer()->getId() && $cart->getQuote()->getCustomerId()) {
+                    $cart->getQuote()->setCustomerId(null);
+                }
                 $cart->save();
-                Mage::getSingleton('checkout/session')->setCartWasUpdated(true);
-                return $this->_output(array(
+                $this->_getSession()->setCartWasUpdated(true);
+                Mage::dispatchEvent('checkout_cart_add_product_complete', array(
+                    'product' => $product,
+                    'request' => $this->getRequest(),
+                    'response' => $this->getResponse())
+                );
+                $this->_output(array(
                     'status' => 'success',
-                    'total' => ($quote->getGrandTotal() ?: '0.00')
+                    'total' => ($cart->getQuote()->getSubtotal() ?: '0.00')
                 ));
             } catch (Exception $e) {
-                return $this->_output(array(
+                $this->_output(array(
                     'error' => $e->getMessage(),
-                    'total' => ($quote->getGrandTotal() ?: '0.00')
+                    'total' => ($cart->getQuote()->getSubtotal() ?: '0.00')
                 ));
             }
         } else {
-            return $this->_output(array(
+            $this->_output(array(
                 'error' => 'The product was not found.',
-                'total' => ($quote->getGrandTotal() ?: '0.00')
+                'total' => ($cart->getQuote()->getSubtotal() ?: '0.00')
             ));
         }
     }
 
     public function clearAction() {
-        $cart = $this->_getCart();
-        $quote = $cart->getQuote();
-        $quote->removeAllItems();
-        $cart->save();
-        Mage::getSingleton('checkout/session')->setCartWasUpdated(true);
+        $this->_getCart()->truncate()->save();
+        $this->_getSession()->setCartWasUpdated(true);
         $this->_output(array(
             'status' => 'success',
-            'total' => ($quote->getGrandTotal() ?: '0.00')
+            'total' => ($this->_getCart()->getQuote()->getSubtotal() ?: '0.00')
         ));
-        $cart->save();
+    }
+
+    protected function _getSession()
+    {
+        return Mage::getSingleton('checkout/session');
     }
 
     protected function _getCart()
@@ -72,6 +91,5 @@ class AltoLabs_Snappic_CartController extends Mage_Core_Controller_Front_Action
     {
         $this->getResponse()->setHeader('Content-type', 'application/json');
         $this->getResponse()->setBody(json_encode($data));
-        return $this;
     }
 }
