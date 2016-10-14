@@ -9,9 +9,12 @@
 
 class AltoLabs_Snappic_CartController extends Mage_Core_Controller_Front_Action
 {
+
     public function totalAction()
     {
-        return $this->_output($this->_getCart()->getQuote()->getGrandTotal());
+        return $this->_output(
+            Mage::getSingleton('checkout/cart')->getQuote()->getGrandTotal()
+        );
     }
 
     public function addAction()
@@ -19,13 +22,13 @@ class AltoLabs_Snappic_CartController extends Mage_Core_Controller_Front_Action
         $sku = $this->getRequest()->getParam('sku');
         $product = $this->_getProductBySku($sku);
         if ($product) {
-            $cart = $this->_getCart();
+            $cart = Mage::getSingleton('checkout/cart');
             $quote = $cart->getQuote();
             try {
                 $quote->addProduct($product);
                 $quote->collectTotals();
                 $cart->save();
-                $this->_getSession()->setCartWasUpdated(true);
+                Mage::getSingleton('checkout/session')->setCartWasUpdated(true);
             } catch (Exception $e) {
                 return $this->_output(array('error' => $e->getMessage()));
             }
@@ -40,16 +43,6 @@ class AltoLabs_Snappic_CartController extends Mage_Core_Controller_Front_Action
         return Mage::getModel('catalog/product')->load(
             Mage::getModel('catalog/product')->getIdBySku($sku)
         );
-    }
-
-    protected function _getSession()
-    {
-        return Mage::getSingleton('checkout/session');
-    }
-
-    protected function _getCart()
-    {
-        return Mage::getSingleton('checkout/cart');
     }
 
     protected function _output($data)
