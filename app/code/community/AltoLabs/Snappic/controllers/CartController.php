@@ -15,7 +15,7 @@ class AltoLabs_Snappic_CartController extends Mage_Core_Controller_Front_Action
         $quote = $this->_getCart()->getQuote();
         return $this->_output(array(
             'status' => 'success',
-            'total' => ($quote ? $quote->getGrandTotal() : 0.0)
+            'total' => ($quote->getGrandTotal() ?: '0.00')
         ));
     }
 
@@ -30,23 +30,22 @@ class AltoLabs_Snappic_CartController extends Mage_Core_Controller_Front_Action
         if ($product->getId()) {
             try {
                 $quote->addProduct($product);
-                $quote->collectTotals();
                 $cart->save();
                 Mage::getSingleton('checkout/session')->setCartWasUpdated(true);
                 return $this->_output(array(
                     'status' => 'success',
-                    'total' => ($quote ? $quote->getGrandTotal() : 0.0)
+                    'total' => ($quote->getGrandTotal() ?: '0.00')
                 ));
             } catch (Exception $e) {
                 return $this->_output(array(
                     'error' => $e->getMessage(),
-                    'total' => ($quote ? $quote->getGrandTotal() : 0.0)
+                    'total' => ($quote->getGrandTotal() ?: '0.00')
                 ));
             }
         } else {
             return $this->_output(array(
                 'error' => 'The product was not found.',
-                'total' => ($quote ? $quote->getGrandTotal() : 0.0)
+                'total' => ($quote->getGrandTotal() ?: '0.00')
             ));
         }
     }
@@ -55,12 +54,11 @@ class AltoLabs_Snappic_CartController extends Mage_Core_Controller_Front_Action
         $cart = $this->_getCart();
         $quote = $cart->getQuote();
         $quote->removeAllItems();
-        $quote->collectTotals();
         $cart->save();
         Mage::getSingleton('checkout/session')->setCartWasUpdated(true);
         $this->_output(array(
             'status' => 'success',
-            'total' => $quote->getGrandTotal()
+            'total' => ($quote->getGrandTotal() ?: '0.00')
         ));
         $cart->save();
     }
