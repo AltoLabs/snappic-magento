@@ -53,8 +53,14 @@ class Altolabs_Snappic_Model_Observer
      */
     public function onAdminPageDisplayed(Varien_Event_Observer $observer) {
         if (!Mage::getSingleton('admin/session')->isLoggedIn()) { return; }
-        if (Mage::getStoreConfig('snappic/general/completion_message_displayed') == true) { return; }
-        Mage::app()->getConfig()->saveConfig('snappic/general/completion_message_displayed', true);
+        $flag = Mage::getModel('core/variable')->loadByCode('snappic_completion_message');
+        if ($flag->getPlainValue() == 'displayed') {
+            return $this;
+        } elseif (!$flag->getId()) {
+          $flag->setCode('snappic_completion_message')
+                                         ->setPlainValue('displayed')
+                                         ->save();
+        }
 
         $helper = $this->getHelper();
         $consumer = Mage::getModel('oauth/consumer')->load('Snappic', 'name');
