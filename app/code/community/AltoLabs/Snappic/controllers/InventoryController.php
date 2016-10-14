@@ -11,36 +11,18 @@ class AltoLabs_Snappic_InventoryController extends Mage_Core_Controller_Front_Ac
 {
     public function indexAction()
     {
-        $payload = $this->_getPayload();
-        $productIds = $payload['ids'];
+        $core = Mage::helper('core');
+        $helper = Mage::helper('altolabs_snappic');
+        $payload = $core->jsonDecode($this->getRequest()->getRawBody());
+        $skus = $payload['skus'];
         $quantities = array();
-        foreach ($productIds as $productId) {
-            $quantities[$productId] = $this->_getProductStockById($productId);
+        foreach ($skus as $sku) {
+            $quantities[$sku] = $helper->getProductStockBySku($sku);
         }
-        return $this->_output($quantities);
-    }
-
-    protected function _getPayload()
-    {
-        return Mage::helper('core')->jsonDecode($this->getRequest()->getRawBody());
-    }
-
-    protected function _getProductStockById($productId)
-    {
-        try {
-          $stockItem = Mage::getModel('cataloginventory/stock_item')->loadByProduct(
-              Mage::getModel('catalog/product')->load($productId)
-          );
-          return $stockItem->getManageStock() ? $stockItem->getQty() : 99;
-        } catch (Exception $e) {
-          return 99;
-        }
-    }
-
-    protected function _output($data)
-    {
         $this->getResponse()->setHeader('Content-type', 'application/json');
-        $this->getResponse()->setBody(json_encode($data));
-        return $this;
+        $this->getResponse()->setBody(json_encode(array(
+            'status' => 'success',
+            'quantities' => $quantities
+        )));
     }
 }

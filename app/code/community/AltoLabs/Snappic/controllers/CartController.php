@@ -12,37 +12,62 @@ class AltoLabs_Snappic_CartController extends Mage_Core_Controller_Front_Action
 
     public function totalAction()
     {
-        return $this->_output(
-            Mage::getSingleton('checkout/cart')->getQuote()->getGrandTotal()
-        );
+        $quote = $this->_getCart()->getQuote();
+        return $this->_output(array(
+            'status' => 'success',
+            'total' => ($quote ? $quote->getGrandTotal() : 0.0)
+        ));
     }
 
     public function addAction()
     {
-        $sku = $this->getRequest()->getParam('sku');
-        $product = $this->_getProductBySku($sku);
-        if ($product) {
-            $cart = Mage::getSingleton('checkout/cart');
-            $quote = $cart->getQuote();
+        $cart = $this->_getCart();
+        $quote = $cart->getQuote();
+        $core = Mage::helper('core');
+        $payload = $core->jsonDecode($this->getRequest()->getRawBody());
+        $sku = $payload['sku'];
+        $product = Mage::helper('altolabs_snappic')->getProductBySku($sku);
+        if ($product->getId()) {
             try {
                 $quote->addProduct($product);
                 $quote->collectTotals();
                 $cart->save();
                 Mage::getSingleton('checkout/session')->setCartWasUpdated(true);
+                return $this->_output(array(
+                    'status' => 'success',
+                    'total' => ($quote ? $quote->getGrandTotal() : 0.0)
+                ));
             } catch (Exception $e) {
-                return $this->_output(array('error' => $e->getMessage()));
+                return $this->_output(array(
+                    'error' => $e->getMessage(),
+                    'total' => ($quote ? $quote->getGrandTotal() : 0.0)
+                ));
             }
-            return $this->_output('ok');
         } else {
-            return $this->_output(array('error' => 'The product was not found.'));
+            return $this->_output(array(
+                'error' => 'The product was not found.',
+                'total' => ($quote ? $quote->getGrandTotal() : 0.0)
+            ));
         }
     }
 
-    protected function _getProductBySku($sku)
+    public function clearAction() {
+        $cart = $this->_getCart();
+        $quote = $cart->getQuote();
+        $quote->removeAllItems();
+        $quote->collectTotals();
+        $cart->save();
+        Mage::getSingleton('checkout/session')->setCartWasUpdated(true);
+        $this->_output(array(
+            'status' => 'success',
+            'total' => $quote->getGrandTotal()
+        ));
+        $cart->save();
+    }
+
+    protected function _getCart()
     {
-        return Mage::getModel('catalog/product')->load(
-            Mage::getModel('catalog/product')->getIdBySku($sku)
-        );
+        return Mage::getSingleton('checkout/cart');
     }
 
     protected function _output($data)

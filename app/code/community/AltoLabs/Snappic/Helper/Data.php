@@ -43,6 +43,25 @@ class AltoLabs_Snappic_Helper_Data extends Mage_Core_Helper_Abstract
         return (string)Mage::app()->getConfig()->getNode('admin/routers/adminhtml/args/frontName') ?: 'admin';
     }
 
+    public function getProductBySku($sku)
+    {
+        return Mage::getModel('catalog/product')->load(
+            Mage::getModel('catalog/product')->getIdBySku($sku)
+        );
+    }
+
+    public function getProductStockBySku($sku)
+    {
+        try {
+          $stockItem = Mage::getModel('cataloginventory/stock_item')->loadByProduct(
+              $this->getProductBySku($sku)
+          );
+          return $stockItem->getManageStock() ? $stockItem->getQty() : 99;
+        } catch (Exception $e) {
+          return 99;
+        }
+    }
+
     /**
      * @param Mage_Sales_Model_Order $order
      *
