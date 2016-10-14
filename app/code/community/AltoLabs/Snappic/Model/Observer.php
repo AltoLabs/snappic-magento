@@ -10,13 +10,24 @@
 class Altolabs_Snappic_Model_Observer
 {
     /**
+     * Defunct!
+     * @return self
+     */
+    public function createCustomerSession(Varien_Event_Observer $observer) { return $this; }
+
+    /**
      * @param  Varien_Event_Observer $observer
      * @return self
      */
     public function onControllerActionPredispatch(Varien_Event_Observer $observer)
     {
         Mage::log('Snappic: onControllerActionPredispatch', null, 'snappic.log');
-        $this->_ensureLandingPageStored();
+        $session = Mage::getSingleton('core/session');
+        $url = Mage::helper('core/url')->getCurrentUrl();
+        $landingPage = $session->getLandingPage();
+        if (!$landingPage || strpos($url, '/shopinsta') !== false) {
+            $session->setLandingPage($url);
+        }
         return $this;
     }
 
@@ -153,21 +164,5 @@ class Altolabs_Snappic_Model_Observer
     public function getHelper()
     {
         return Mage::helper('altolabs_snappic');
-    }
-
-    /**
-     * Sets the landing URL into the session.
-     *
-     * @return string
-     */
-    protected function _ensureLandingPageStored()
-    {
-        $session = Mage::getSingleton('core/session');
-        $url = Mage::helper('core/url')->getCurrentUrl();
-        $landingPage = $session->getLandingPage();
-        if (!$landingPage || strpos($url, '/shopinsta') !== false) {
-            $session->setLandingPage($url);
-        }
-        return $session->getLandingPage();
     }
 }
