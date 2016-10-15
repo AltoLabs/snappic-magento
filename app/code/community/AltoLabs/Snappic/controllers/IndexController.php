@@ -32,7 +32,7 @@ class AltoLabs_Snappic_IndexController extends Mage_Core_Controller_Front_Action
             webcomponents_url: '$storeAssetsHost/bower_components/webcomponentsjs/webcomponents-lite.min.js',
             styles_url: '$storeAssetsHost/styles/main.css',
             bundle_url: '$storeAssetsHost/elements/elements.vulcanized.html',
-            soapjs_url: '$storeAssetsHost/scripts/soap.js',
+            soapjs_url: '$storeAssetsHost/scripts/soap.min.js',
             xml2json_url: '$storeAssetsHost/scripts/xml2json.min.js',
             enable_ig_error_detect: true,
             enable_infinite_scroll: true,
