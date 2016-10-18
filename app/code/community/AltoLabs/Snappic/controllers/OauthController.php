@@ -9,57 +9,63 @@
 
 class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
 {
-  public function indexAction()
-  {
-    $this->loadLayout();
-    $block = $this->getLayout()->createBlock('core/text');
-    $block->setText("
-      <script src='https://cdn.rawgit.com/bytespider/jsOAuth/master/dist/jsOAuth-1.3.7.js'></script>
-      <script>
-        // Those simulate things we get from query parameters.
-        var query = {
-            key: '62f9cbfacecdf0946944f1dbe6633e88',
-            secret: '93c56a90e1809b5890e0037f60f0723b',
-            domain: 'dockerized-magento.local',
-            admin_html: 'admin'
-        };
-        function urlFor(path) { return 'http://' + query.domain + path; }
+    public function indexAction()
+    {
+      $this->loadLayout();
+      $this->getLayout()->getBlock('head')->addJs('jsoauth.js');
+      $block = $this->getLayout()->createBlock('core/text');
+      $block->setText($this->pageHtml());
+      $this->getLayout()->getBlock('content')->append($block);
+      $this->renderLayout();
+    }
 
-        var oauth = new OAuth({
-            consumerKey: query.key,
-            consumerSecret: query.secret,
-            requestTokenUrl: urlFor('/oauth/initiate'),
-            authorizationUrl:  urlFor('/' + query.admin_html + '/oauth_authorize'),
-            accessTokenUrl: urlFor('/oauth/token')
-        });
-        oauth.fetchRequestToken(openAuthoriseWindow, failureHandler);
+    protected function pageHtml()
+    {
+        $helper = Mage::helper('altolabs_snappic');
+        $domain = $helper->getDomain();
+        $adminHtml = $helper->getAdminHtmlPath();
 
-        function openAuthoriseWindow(url) {
-            var wnd = window.open(url, 'authorise');
-            setTimeout(waitForPin, 100);
-            function waitForPin() {
+        $consumer = Mage::getModel('oauth/consumer')->load('Snappic', 'name');
+        $consumerKey = $consumer->getKey();
+        $consumerSecret = $this->getRequest()->getParam('secret');
+        $expectedConsumerSecret = $consumer->getSecret();
+        if ($consumerSecret != $expectedConsumerSecret) { return ''; }
+        return "
+          <script>
+            var oauth = new OAuth({
+              consumerKey: '$consumerKey',
+              consumerSecret: '$consumerSecret',
+              requestTokenUrl: 'http://$domain/oauth/initiate',
+              authorizationUrl:  'http://$domain/$adminHtml/oauth_authorize',
+              accessTokenUrl: 'http://$domain/oauth/token'
+            });
+            oauth.fetchRequestToken(openAuthoriseWindow, failureHandler);
+
+            function openAuthoriseWindow(url) {
+              var wnd = window.open(url, 'authorise');
+              setTimeout(waitForPin, 100);
+              function waitForPin() {
                 if (wnd.closed) {
-                    var pin = prompt('Please enter your PIN', '');
-                    oauth.setVerifier(pin);
-                    oauth.fetchAccessToken(getSomeData, failureHandler);
+                  var pin = prompt('Please enter your PIN', '');
+                  if (pin == null || pin == '') { return; }
+                  oauth.setVerifier(pin);
+                  oauth.fetchAccessToken(successHandler, failureHandler);
                 } else {
-                    setTimeout(waitForPin, 100);
+                  setTimeout(waitForPin, 100);
                 }
+              }
             }
-        }
-
-        function getSomeData() {
-            oauth.get('http://dockerized-magento.local/api/rest/snappic/stores/current', function (data) {
-                console.log(data.text);
-            }, failureHandler);
-        }
-
-        function failureHandler(data) {
-            console.error(data);
-        }
-      </script>
-    ");
-    $this->getLayout()->getBlock('content')->append($block);
-    $this->renderLayout();
-  }
+            function successHandler() {
+              var ret = document.createElement('div');
+              ret.setAttribute('id', 'store_access_token');
+              ret.setAttribute('hidden', '');
+              ret.innerHTML = '$consumerKey:$consumerSecret' + oauth.getAccessTokenKey() + ':' + oauth.getAccessTokenSecret();
+              document.body.append(ret);
+            }
+            function failureHandler(data) {
+              console.error(data);
+            }
+          </script>
+        ";
+    }
 }
