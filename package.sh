@@ -36,4 +36,4 @@ done
 php packager.php --composer ../../Snappic/composer.json
 
 echo "Moving package..."
-mv ../var/connect/AltoLabs_Snappic*.tgz ../../Snappic
+mv ../var/connect/AltoLabs_Snappic*.tgz ../../Snappic/

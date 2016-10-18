@@ -1,9 +1,9 @@
 {
     "warn": "app/code/core/Mage/Connect/Model/Extension.php:110",
     "name": "AltoLabs/Snappic",
-    "stability": "dev",
+    "stability": "stable",
     "type": "magento-module",
-    "license": "GPL-3.0",
+    "license": "AltoLabs Closed Source",
     "compatible": "1.9",
     "description": "AltoLabs Snappic Extension",
     "homepage": "http://altolabs.co",
