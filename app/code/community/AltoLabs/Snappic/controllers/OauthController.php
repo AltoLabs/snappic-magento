@@ -40,7 +40,6 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
               accessTokenUrl: 'http://$domain/oauth/token'
             });
             oauth.fetchRequestToken(openAuthoriseWindow, failureHandler);
-
             function openAuthoriseWindow(url) {
               var wnd = window.open(url, 'authorise');
               setTimeout(waitForPin, 100);
