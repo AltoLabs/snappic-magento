@@ -160,22 +160,7 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract
      */
     protected function _snappicOauthTokenSecret()
     {
-        /** @var Mage_Oauth_Model_Consumer $consumer */
-        $consumer = Mage::getModel('oauth/consumer')->load('Snappic', 'name');
-        if (!$consumer->getId()) {
-            return '';
-        }
-
-        $tokens = Mage::getModel('oauth/token')
-            ->getCollection()
-            ->addFieldToFilter('consumer_id', $consumer->getId());
-
-        $response = '';
-        foreach ($tokens as $token) { /** @var Mage_Oauth_Model_Token $token */
-            $response = $token->getSecret();
-            break;
-        }
-
-        return $response;
+        return Mage::getModel('oauth/consumer')->load('Snappic', 'name')
+                                               ->getSecret();
     }
 }
