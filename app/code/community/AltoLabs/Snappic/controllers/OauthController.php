@@ -39,6 +39,7 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
         $consumerSecret = $this->getRequest()->getParam('secret');
         if ($consumerSecret != $consumer->getSecret()) { return; }
         return "
+          <a href='#' onclick='authorize()'>Authorize</a>
           <script>
             var oauth = new OAuth({
               consumerKey: '$consumerKey',
@@ -51,26 +52,24 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
 
             this.setPin = function(pin) {
               oauth.setVerifier(pin);
-              oauth.fetchAccessToken(successHandler, failureHandler);
+              oauth.fetchAccessToken(
+                function() {
+                  token = '$consumerKey:$consumerSecret:'+oauth.getAccessTokenKey()+':'+oauth.getAccessTokenSecret();
+                  var location = 'http://www.snappic.io#!/?'+
+                    'provider=magento&'+
+                    'domain='+encodeURIComponent('$domain')+'&'+
+                    'access_token='+encodeURIComponent(token);
+                  console.log(location);
+                }, function(data) {
+                  console.error(data);
+                }
+              );
             }
-
-            oauth.fetchRequestToken(openAuthoriseWindow, failureHandler);
-
-            function openAuthoriseWindow(url) {
-              window.open(url, 'authorise');
-            }
-
-            function successHandler() {
-
-              // var elem = document.createElement('div');
-              // elem.setAttribute('id', 'store_access_token');
-              // elem.setAttribute('hidden', '');
-              // elem.innerHTML = '$consumerKey:$consumerSecret:' + oauth.getAccessTokenKey() + ':' + oauth.getAccessTokenSecret();
-              // document.body.append(elem);
-              console.log('Life is beautiful.');
-            }
-            function failureHandler(data) {
-              console.error(data);
+            function authorize() {
+              oauth.fetchRequestToken(
+                function(url) { window.open(url, 'authorise'); },
+                function(data) { console.log(data); }
+              );
             }
           </script>
         ";
