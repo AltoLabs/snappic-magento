@@ -14,7 +14,7 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
       $this->loadLayout();
       $this->getLayout()->getBlock('head')->addJs('jsoauth.js');
       $block = $this->getLayout()->createBlock('core/text');
-      $block->setText($this->indexHtml());
+      $block->setText($this->indexHeadHtml());
       $this->getLayout()->getBlock('head')->append($block);
       $this->renderLayout();
     }
@@ -28,7 +28,7 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
       $this->renderLayout();
     }
 
-    protected function indexHtml()
+    protected function indexHeadHtml()
     {
         $helper = Mage::helper('altolabs_snappic');
         $domain = $helper->getDomain();
@@ -39,7 +39,6 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
         $consumerSecret = $this->getRequest()->getParam('secret');
         if ($consumerSecret != $consumer->getSecret()) { return; }
         return "
-          <a href='#' onclick='authorize()'>Authorize</a>
           <script>
             var oauth = new OAuth({
               consumerKey: '$consumerKey',
@@ -49,6 +48,10 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
               accessTokenUrl: 'http://$domain/oauth/token',
               callbackUrl: 'http://$domain/shopinsta/oauth/callback'
             });
+            oauth.fetchRequestToken(
+              function(url) { window.open(url, 'authorise'); },
+              function(data) { console.log(data); }
+            );
 
             this.setPin = function(pin) {
               oauth.setVerifier(pin);
@@ -65,14 +68,7 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
                 }
               );
             }
-            function authorize() {
-              oauth.fetchRequestToken(
-                function(url) { window.open(url, 'authorise'); },
-                function(data) { console.log(data); }
-              );
-            }
-          </script>
-        ";
+          </script>";
     }
 
     protected function callbackHtml()
@@ -81,10 +77,11 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
           <script>
             qs = document.location.search.split('+').join(' ');
             var params = {}, tokens, re = /[?&]?([^=]+)=([^&]*)/g;
-            while (tokens = re.exec(qs)) { params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]); }
+            while (tokens = re.exec(qs)) {
+              params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
+            }
             window.opener.setPin(params['oauth_verifier']);
             window.close();
-          </script>
-        ";
+          </script>";
     }
 }
