@@ -12,23 +12,32 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
     public function indexAction()
     {
       $this->loadLayout();
+
       $this->getLayout()->getBlock('head')->addJs('jsoauth.js');
+
       $block = $this->getLayout()->createBlock('core/text');
-      $block->setText($this->indexHeadHtml());
+      $block->setText($this->indexHeadBlock());
       $this->getLayout()->getBlock('head')->append($block);
+
+      $block = $this->getLayout()->createBlock('core/text');
+      $block->setText($this->indexBodyBlock());
+      $this->getLayout()->getBlock('content')->append($block);
+
       $this->renderLayout();
     }
 
     public function callbackAction()
     {
       $this->loadLayout();
+
       $block = $this->getLayout()->createBlock('core/text');
       $block->setText($this->callbackHtml());
       $this->getLayout()->getBlock('content')->append($block);
+
       $this->renderLayout();
     }
 
-    protected function indexHeadHtml()
+    protected function indexHeadBlock()
     {
         $helper = Mage::helper('altolabs_snappic');
         $domain = $helper->getDomain();
@@ -39,7 +48,6 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
         $consumerSecret = $this->getRequest()->getParam('secret');
         if ($consumerSecret != $consumer->getSecret()) { return; }
         return "
-          <a href='#' onclick='authorize()'>Authorize</a>
           <script>
             var oauth = new OAuth({
               consumerKey: '$consumerKey',
@@ -72,6 +80,12 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
               );
             }
           </script>";
+    }
+
+    protected function indexBodyBlock() {
+      return "
+        <a href='#' onclick='authorize()'>Authorize</a>
+      ";
     }
 
     protected function callbackHtml()
