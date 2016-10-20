@@ -39,6 +39,7 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
         $consumerSecret = $this->getRequest()->getParam('secret');
         if ($consumerSecret != $consumer->getSecret()) { return; }
         return "
+          <a href='#' onclick='authorize()'>Authorize</a>
           <script>
             var oauth = new OAuth({
               consumerKey: '$consumerKey',
@@ -48,8 +49,11 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
               accessTokenUrl: 'http://$domain/oauth/token',
               callbackUrl: 'http://$domain/shopinsta/oauth/callback'
             });
+
+            var authorizeUrl = ''
+            function authorize() { window.open(authorizeUrl, 'authorise'); }
             oauth.fetchRequestToken(
-              function(url) { window.open(url, 'authorise'); },
+              function(url) { authorizeUrl = url },
               function(data) { console.log(data); }
             );
 
