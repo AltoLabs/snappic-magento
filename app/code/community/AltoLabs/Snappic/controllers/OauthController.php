@@ -58,7 +58,7 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
               oauth.fetchAccessToken(
                 function() {
                   token = '$consumerKey:$consumerSecret:'+oauth.getAccessTokenKey()+':'+oauth.getAccessTokenSecret();
-                  window.location = 'http://www.snappic.io#!/?'+
+                  window.location = 'http://www.snappic.io?'+
                     'provider=magento&'+
                     'domain='+encodeURIComponent('$domain')+'&'+
                     'access_token='+encodeURIComponent(token);
