@@ -52,10 +52,10 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
             var oauth = new OAuth({
               consumerKey: '$consumerKey',
               consumerSecret: '$consumerSecret',
-              requestTokenUrl: 'http://$domain/oauth/initiate',
-              authorizationUrl:  'http://$domain/$adminHtml/oauth_authorize',
-              accessTokenUrl: 'http://$domain/oauth/token',
-              callbackUrl: 'http://$domain/shopinsta/oauth/callback'
+              requestTokenUrl: 'https://$domain/oauth/initiate',
+              authorizationUrl:  'https://$domain/$adminHtml/oauth_authorize',
+              accessTokenUrl: 'https://$domain/oauth/token',
+              callbackUrl: 'https://$domain/shopinsta/oauth/callback'
             });
 
             var authorizeUrl = ''
@@ -84,7 +84,9 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
 
     protected function indexBodyBlock() {
       return "
-        <a href='#' onclick='authorize()'>Authorize</a>
+        <h2>
+          <a href='#' onclick='authorize()'>Click here to authorize Snappic.</a>
+        </h3>
       ";
     }
 
@@ -94,9 +96,7 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
           <script>
             qs = document.location.search.split('+').join(' ');
             var params = {}, tokens, re = /[?&]?([^=]+)=([^&]*)/g;
-            while (tokens = re.exec(qs)) {
-              params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
-            }
+            while (tokens = re.exec(qs)) { params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]); }
             window.opener.setPin(params['oauth_verifier']);
             window.close();
           </script>";
