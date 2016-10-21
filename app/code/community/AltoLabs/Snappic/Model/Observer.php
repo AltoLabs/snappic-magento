@@ -21,7 +21,6 @@ class Altolabs_Snappic_Model_Observer
      */
     public function onControllerActionPredispatch(Varien_Event_Observer $observer)
     {
-        Mage::log('Snappic: onControllerActionPredispatch', null, 'snappic.log');
         $session = Mage::getSingleton('core/session');
         $url = Mage::helper('core/url')->getCurrentUrl();
         $landingPage = $session->getLandingPage();
@@ -47,7 +46,6 @@ class Altolabs_Snappic_Model_Observer
      */
     public function onAfterOrderPlace(Varien_Event_Observer $observer)
     {
-        Mage::log('Snappic: onAfterOrderPlace', null, 'snappic.log');
         /** @var Mage_Sales_Model_Order $order */
         $order = $observer->getEvent()->getOrder();
         $sendable = $this->getHelper()->getSendableOrderData($order);
@@ -91,7 +89,6 @@ class Altolabs_Snappic_Model_Observer
      */
     public function onProductAfterSave(Varien_Event_Observer $observer)
     {
-        Mage::log('Snappic: onProductAfterSave', null, 'snappic.log');
         /** @var Mage_Catalog_Model_Product $product */
         $product = $observer->getEvent()->getProduct();
         if ($product->hasDataChanges()) {
@@ -110,7 +107,6 @@ class Altolabs_Snappic_Model_Observer
      */
     public function onProductAfterAttributeUpdate(Varien_Event_Observer $observer)
     {
-        Mage::log('Snappic: onProductAfterAttributeUpdate', null, 'snappic.log');
         $productIds = $observer->getEvent()->getProductIds();
         /** @var Mage_Catalog_Model_Product $productModel */
         $productModel = Mage::getModel('catalog/product');
@@ -131,7 +127,6 @@ class Altolabs_Snappic_Model_Observer
      */
     public function onProductAfterDelete(Varien_Event_Observer $observer)
     {
-        Mage::log('Snappic: onProductAfterDelete', null, 'snappic.log');
         /** @var Mage_Catalog_Model_Product $product */
         $product = $observer->getEvent()->getProduct();
         $sendable = array($this->getHelper()->getSendableProductData($product));

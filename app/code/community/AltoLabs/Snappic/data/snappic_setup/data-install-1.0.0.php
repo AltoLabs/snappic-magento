@@ -56,18 +56,8 @@ if (!$apiRole->getId()) {
 }
 
  $resources = array(
-   'cataloginventory',
-   'cataloginventory/info',
-   'cart',
-   'cart/create',
-   'cart/totals',
-   'cart/product',
-   'cart/product/add',
-   'cart/customer',
-   'cart/customer/set',
-   'cart/customer/addresses'
- );
-
+    'cataloginventory', 'cataloginventory/info', 'cart', 'cart/create', 'cart/totals',
+    'cart/product', 'cart/product/add', 'cart/customer', 'cart/customer/set','cart/customer/addresses');
  Mage::getModel("api/rules")
      ->setRoleId($apiParentRole->getId())
      ->setResources($resources)
@@ -77,18 +67,7 @@ if (!$apiRole->getId()) {
 
 Mage::log('Checking for the admin user...', null, 'snappic.log');
 $user = Mage::getModel('admin/user')->load('admin', 'username');
-// In future versions, we'll dedicate a Snappic REST user with a REST Snappic role.
-// $user = Mage::getModel('admin/user')->load('snappic', 'username');
-// if (!$user->getId()) {
-//     Mage::Log('User was not found, creating...', null, 'snappic.log');
-//     $user = Mage::getModel('admin/user')
-//         ->setEmail('hi@snappic.io')
-//         ->setUsername('snappic')
-//         ->setFirstname('Snappic')
-//         ->setLastname('Snappic')
-//         ->setIsActive(true)
-//         ->save();
-// }
+Mage::log('Got admin user with id '.$user->getId().'.', null, 'snappic.log');
 
 Mage::log('Checking for the REST Admin role...', null, 'snappic.log');
 /** @var Mage_Api2_Model_Global_Role $adminRole */
@@ -165,8 +144,11 @@ $facebookId = $connect->getFacebookId();
 
 $key = $consumer->getKey();
 $secret = $consumer->getSecret();
-Mage::log("AltoLabs Snappic Setup successfuly completed with Key=$key, Secret=$secret, FacebookId=$facebookId", null, 'snappic.log');
 $connect->setSendable(array('key' => $key, 'secret' => $secret, 'facebook_id' => $facebookId))
         ->notifySnappicApi('application/installed');
+
+$message = "AltoLabs Snappic Setup successfuly completed with ".
+           "Key=$key, Secret=$secret, FacebookId=$facebookId";
+Mage::log($message, null, 'snappic.log');
 
 $installer->endSetup();
