@@ -61,20 +61,29 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
             var authorizeUrl = ''
             function authorize() { window.open(authorizeUrl, 'authorise'); }
             oauth.fetchRequestToken(
-              function(url) { authorizeUrl = url },
-              function(data) { console.log(data); }
+              function(url) {
+                authorizeUrl = url
+                // TODO: Have the link appear.
+              },
+              function(data) {
+                // TODO: Show an error.
+                console.log(data);
+              }
             );
 
             this.setPin = function(pin) {
+              // TODO: Have the link disappear, show a "Please wait" thingy, as we are hitting OAuth again.
               oauth.setVerifier(pin);
               oauth.fetchAccessToken(
                 function() {
+                  // TODO: Have the link read a "All done, redirecting..." thingy, as we are ready to move to snappic admin.
                   token = '$consumerKey:$consumerSecret:'+oauth.getAccessTokenKey()+':'+oauth.getAccessTokenSecret();
                   window.location = 'http://www.snappic.io?'+
                     'provider=magento&'+
                     'domain='+encodeURIComponent('$domain')+'&'+
                     'access_token='+encodeURIComponent(token);
                 }, function(data) {
+                  // TODO: Show an error.
                   console.error(data);
                 }
               );
@@ -83,6 +92,7 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
     }
 
     protected function indexBodyBlock() {
+      // TODO: Have an empty DIV created, with a "PLEASE WAIT."
       return "
         <h2>
           <a href='#' onclick='authorize()'>Click here to authorize Snappic.</a>
