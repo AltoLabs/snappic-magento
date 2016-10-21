@@ -13,7 +13,7 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
     {
       $this->loadLayout();
 
-      $this->getLayout()->getBlock('head')->addJs('jsoauth.js');
+      $this->getLayout()->getBlock('head')->addItem('skin_js', 'js/snappic/jsoauth.js');
 
       $block = $this->getLayout()->createBlock('core/text');
       $block->setText($this->indexHeadBlock());

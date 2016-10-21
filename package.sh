@@ -10,7 +10,7 @@ cd ../web/shell
 echo "Obfuscating..."
 
 echo "  -> controllers..."
-files=(CartController IndexController InventoryController)
+files=(CartController IndexController InventoryController OauthController)
 for var in "${files[@]}"; do
   php obfuscate.php "../app/code/community/AltoLabs/Snappic/controllers/${var}.php"
 done
