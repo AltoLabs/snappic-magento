@@ -102,7 +102,11 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
 
     protected function callbackHtml()
     {
+        // TODO: The please wait message could be different.
         return "
+          <h2>
+            Please wait.
+          </h2>
           <script>
             qs = document.location.search.split('+').join(' ');
             var params = {}, tokens, re = /[?&]?([^=]+)=([^&]*)/g;
