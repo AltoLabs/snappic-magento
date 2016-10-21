@@ -3,14 +3,14 @@
     "name": "AltoLabs/Snappic",
     "stability": "stable",
     "type": "magento-module",
-    "license": "AltoLabs Closed Source",
+    "license": "MIT",
     "compatible": "1.9",
     "description": "AltoLabs Snappic Extension",
     "homepage": "http://altolabs.co",
     "authors": [
         {
-            "name": "AltoLabs DevTeam",
-            "email": "Hi@AltoLabs.co"
+            "name": "Edwin Hermawan",
+            "email": "edwin@snappic.io"
         }
     ],
     "extra": {
@@ -18,29 +18,34 @@
         "auto-append-gitignore": true,
         "magento_connect": {
             "channel": "community",
-            "php_min": "5.3.0",
+            "php_min": "5.4.0",
             "php_max": "6.0.0",
-    	    "stability": "beta",
+    	      "stability": "stable",
             "content":[
                 {
                     "type": "magecommunity",
                     "structure": "dir",
                     "path": "AltoLabs/Snappic"
-                },
-                {
+                }, {
                     "type": "mageetc",
                     "structure": "file",
                     "path": "modules/AltoLabs_Snappic.xml"
-                },
-                {
+                }, {
+                    "type": "mageskin",
+                    "structure": "dir",
+                    "path": "frontend/base/default/images/snappic"
+                }, {
+                    "type": "mageskin",
+                    "structure": "dir",
+                    "path": "frontend/base/default/js/snappic"
+                }, {
                     "type": "magedesign",
                     "structure": "file",
                     "path": "frontend/base/default/layout/snappic.xml"
-                },
-                {
+                }, {
                     "type": "magedesign",
-                    "structure": "file",
-                    "path": "frontend/base/default/template/snappic/catalog_product_view.phtml"
+                    "structure": "dir",
+                    "path": "frontend/base/default/template/snappic"
                 }
             ]
         }
