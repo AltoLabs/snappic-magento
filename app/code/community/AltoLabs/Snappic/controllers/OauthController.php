@@ -86,11 +86,11 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
 <div id="snappic_wrap">
   <div style="z-index:1"><img src="http://store.snappic.io/images/magento_authorize_snappic.png" onclick="Snappic.authorize()"></div>
   <div class="snappic-msg"><div>Retrieving authorization link...</div></div>
-  <div class="snappic-msg"><div>Error validating authentication request. Please contact your administrator</div></div>
-  <div class="snappic-msg"><div>Error retrieving authorization link. Please contact your administrator</div></div>
+  <div class="snappic-msg"><div>Error validating authentication request. Please reload the page, or contact your administrator</div></div>
+  <div class="snappic-msg"><div>Error retrieving authorization link. Please reload the page, or contact your administrator</div></div>
   <div class="snappic-msg"><div>Almost there! Please wait while we verify the authentication token</div></div>
   <div class="snappic-msg"><div>All done! Redirecting you to Snappic to continue your registration...</div></div>
-  <div class="snappic-msg"><div>Error verifying authentication token. Please contact your administrator</div></div>
+  <div class="snappic-msg"><div>Error verifying authentication token. Please reload the page, or contact your administrator</div></div>
   <div class="snappic-msg"><div>Please log into your Magento administrator account</div></div>
 </div>
 <script>
