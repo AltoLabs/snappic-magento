@@ -75,11 +75,13 @@ class Altolabs_Snappic_Model_Observer
         $consumer = Mage::getModel('oauth/consumer')->load('Snappic', 'name');
         $secret = urlencode($consumer->getSecret());
         $link = 'https://'.$domain.'/shopinsta/oauth?secret='.$secret;
-        Mage::getSingleton('adminhtml/session')->addSuccess('
-          <img src="http://snappic.io/static/img/general/logo.svg" style="padding: 10px; background-color: #E85B52;">
-          <br>😱 Almost done! 👉 <a href="'.$link.'">CLICK HERE</a> 👈 to complete your sign up!
-        ');
-
+        $html = <<<HTML
+<img src="http://snappic.io/static/img/general/logo.svg" style="padding:10px;background-color:#E85B52;">
+<div style="font-size:16px;font-weight:400;letter-spacing:1.2px;line-height: 1.2;border:0;padding:0;margin:24px 4px">Almost done!</div>
+<script>window.Snappic={};window.Snappic.signup=function(){window.location='$link';};</script>
+<img src="http://store.snappic.io/images/magento_continue_signup.png" style="width:100%;max-width:460px;cursor:pointer;" onclick="Snappic.signup()">
+HTML;
+        Mage::getSingleton('adminhtml/session')->addSuccess($html);
         return $this;
     }
 

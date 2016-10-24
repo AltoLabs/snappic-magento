@@ -16,14 +16,150 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
       $this->getLayout()->getBlock('head')->addItem('skin_js', 'js/snappic/jsoauth.js');
 
       $block = $this->getLayout()->createBlock('core/text');
-      $block->setText($this->indexHeadBlock());
-      $this->getLayout()->getBlock('head')->append($block);
-
-      $block = $this->getLayout()->createBlock('core/text');
       $block->setText($this->indexBodyBlock());
       $this->getLayout()->getBlock('content')->append($block);
 
       $this->renderLayout();
+    }
+
+    protected function indexBodyBlock() {
+      $helper = Mage::helper('altolabs_snappic');
+      $domain = $helper->getDomain();
+      $adminHtml = $helper->getAdminHtmlPath();
+
+      $consumer = Mage::getModel('oauth/consumer')->load('Snappic', 'name');
+      $consumerKey = $consumer->getKey();
+      $consumerSecret = $this->getRequest()->getParam('secret');
+
+      $payload = <<<HTML
+<style>
+#snappic_output, .snappic-msg {
+  width: 100%;
+  height: auto;
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 1.2px;
+  line-height: 1.2;
+  border: 0;
+  padding: 0;
+}
+.snappic-msg > div {
+  width: 100%;
+  text-align: center;
+}
+#snappic_output {
+  text-align: center;
+  margin: 0 0 42px 0;
+}
+#snappic_wrap {
+  width: 100%;
+  height: 100px;
+  display: block;
+  position: relative;
+}
+#snappic_wrap > div {
+  position: absolute;
+  top: 0; right: 0; left: 0;
+  opacity: 0;
+  transition: opacity 200ms linear;
+}
+.snappic-msg {
+  top: 24px;
+}
+#snappic_wrap img {
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+  transition: transform 200ms ease-in-out;
+  cursor: pointer;
+}
+#snappic_wrap:not(.disabled) img:hover {
+  transform: scale(1.02);
+}
+#snappic_wrap.disabled img {
+  opacity: 0.15;
+  cursor: auto;
+  pointer-events: none;
+}
+</style>
+<div id="snappic_output">So that we can make sure you're always displaying the right prices and inventory</div>
+<div id="snappic_wrap">
+  <div style="z-index:1"><img src="http://store.snappic.io/images/magento_authorize_snappic.png" onclick="Snappic.authorize()"></div>
+  <div class="snappic-msg"><div>Retrieving authorization link...</div></div>
+  <div class="snappic-msg"><div>Error validating authentication request. Please contact your administrator</div></div>
+  <div class="snappic-msg"><div>Error retrieving authorization link. Please contact your administrator</div></div>
+  <div class="snappic-msg"><div>Almost there! Please wait while we verify the authentication token</div></div>
+  <div class="snappic-msg"><div>All done! Redirecting you to Snappic to continue your registration...</div></div>
+  <div class="snappic-msg"><div>Error verifying authentication token. Please contact your administrator</div></div>
+  <div class="snappic-msg"><div>Please log into your Magento administrator account</div></div>
+</div>
+<script>
+var Snappic = {};
+Snappic._msg = document.querySelector('#snappic_output');
+Snappic._wrap = document.querySelector('#snappic_wrap');
+Snappic.show = function (m) {
+  var n = document.querySelectorAll('#snappic_wrap > div');
+  for (var a = 0; a < n.length; a++) {
+    n[a].style.opacity = '';
+  }
+  n[m].style.opacity = '1';
+  if (m === 0) {
+    document.querySelector('#snappic_wrap').classList.remove('disabled');
+  } else {
+    document.querySelector('#snappic_wrap').classList.add('disabled');
+  }
+};
+</script>
+HTML;
+
+      if ($consumerSecret != $consumer->getSecret()) {
+        $payload .= "<script>Snappic.show(2);</script>";
+        return $payload;
+      }
+
+      $payload .= <<<JS
+<script>
+Snappic.setPin = function(pin) {
+  this.show(4);
+  this._oauth.setVerifier(pin);
+  this._oauth.fetchAccessToken( function() {
+    this.show(5);
+    token = '$consumerKey:$consumerSecret:' + this._oauth.getAccessTokenKey() + ':' + this._oauth.getAccessTokenSecret();
+    window.location = 'http://www.snappic.io?' + 'provider=magento&domain=' + encodeURIComponent('$domain') + '&access_token=' + encodeURIComponent(token);
+  }.bind(this), function(data) {
+    this.show(6);
+    console.error(data);
+  }.bind(this));
+}.bind(Snappic);
+Snappic.authorizeUrl = '';
+Snappic.authorize = function () {
+  this.show(7);
+  window.open(this.authorizeUrl, '_blank', 'location=yes,clearcache=yes');
+}.bind(Snappic);
+Snappic.init = function () {
+  this.show(1);
+  var p = window.location.protocol;
+  this._oauth = new OAuth({
+    consumerKey: '$consumerKey',
+    consumerSecret: '$consumerSecret',
+    requestTokenUrl: p + '//$domain/oauth/initiate',
+    authorizationUrl: p + '//$domain/$adminHtml/oauth_authorize',
+    accessTokenUrl: p + '//$domain/oauth/token',
+    callbackUrl: p + '//$domain/shopinsta/oauth/callback'
+  });
+  this._oauth.fetchRequestToken(function(url) {
+    console.log(url);
+    this.authorizeUrl = url;
+    this.show(0);
+  }.bind(this), function(data) {
+    this.show(3);
+    console.log(data);
+  });
+}.bind(Snappic);
+Snappic.init();
+</script>
+JS;
+      return $payload;
     }
 
     public function callbackAction()
@@ -37,82 +173,19 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
       $this->renderLayout();
     }
 
-    protected function indexHeadBlock()
-    {
-        $helper = Mage::helper('altolabs_snappic');
-        $domain = $helper->getDomain();
-        $adminHtml = $helper->getAdminHtmlPath();
-
-        $consumer = Mage::getModel('oauth/consumer')->load('Snappic', 'name');
-        $consumerKey = $consumer->getKey();
-        $consumerSecret = $this->getRequest()->getParam('secret');
-        if ($consumerSecret != $consumer->getSecret()) { return; }
-        return "
-          <script>
-            var oauth = new OAuth({
-              consumerKey: '$consumerKey',
-              consumerSecret: '$consumerSecret',
-              requestTokenUrl: 'https://$domain/oauth/initiate',
-              authorizationUrl:  'https://$domain/$adminHtml/oauth_authorize',
-              accessTokenUrl: 'https://$domain/oauth/token',
-              callbackUrl: 'https://$domain/shopinsta/oauth/callback'
-            });
-
-            var authorizeUrl = ''
-            function authorize() { window.open(authorizeUrl, 'authorise'); }
-            oauth.fetchRequestToken(
-              function(url) {
-                authorizeUrl = url
-                // TODO: Have the link appear.
-              },
-              function(data) {
-                // TODO: Show an error.
-                console.log(data);
-              }
-            );
-
-            this.setPin = function(pin) {
-              // TODO: Have the link disappear, show a "Please wait" thingy, as we are hitting OAuth again.
-              oauth.setVerifier(pin);
-              oauth.fetchAccessToken(
-                function() {
-                  // TODO: Have the link read a "All done, redirecting..." thingy, as we are ready to move to snappic admin.
-                  token = '$consumerKey:$consumerSecret:'+oauth.getAccessTokenKey()+':'+oauth.getAccessTokenSecret();
-                  window.location = 'http://www.snappic.io?'+
-                    'provider=magento&'+
-                    'domain='+encodeURIComponent('$domain')+'&'+
-                    'access_token='+encodeURIComponent(token);
-                }, function(data) {
-                  // TODO: Show an error.
-                  console.error(data);
-                }
-              );
-            }
-          </script>";
-    }
-
-    protected function indexBodyBlock() {
-      // TODO: Have an empty DIV created, with a "PLEASE WAIT."
-      return "
-        <h2>
-          <a href='#' onclick='authorize()'>Click here to authorize Snappic.</a>
-        </h3>
-      ";
-    }
-
     protected function callbackHtml()
     {
-        // TODO: The please wait message could be different.
-        return "
-          <h2>
-            Please wait.
-          </h2>
-          <script>
-            qs = document.location.search.split('+').join(' ');
-            var params = {}, tokens, re = /[?&]?([^=]+)=([^&]*)/g;
-            while (tokens = re.exec(qs)) { params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]); }
-            window.opener.setPin(params['oauth_verifier']);
-            window.close();
-          </script>";
+        $payload = <<<CBHTML
+<div style='width:100%;height:auto;font-size:16px;font-weight:400;letter-spacing:1.2px;line-height:1.2;text-align:center;margin:0 0 42px 0;border:0;padding:0'>Completing authentication...</div>
+<script>
+  (function () {
+    var qs = document.location.search.split('+').join(' '), params = {}, tokens, re = /[?&]?([^=]+)=([^&]*)/g;
+    while (tokens = re.exec(qs)) { params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]); }
+    window.opener.Snappic.setPin(params['oauth_verifier']);
+    window.close();
+  })();
+</script>
+CBHTML;
+        return $payload;
     }
 }
