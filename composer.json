@@ -33,10 +33,6 @@
                 }, {
                     "type": "mageskin",
                     "structure": "dir",
-                    "path": "frontend/base/default/images/snappic"
-                }, {
-                    "type": "mageskin",
-                    "structure": "dir",
                     "path": "frontend/base/default/js/snappic"
                 }, {
                     "type": "magedesign",
