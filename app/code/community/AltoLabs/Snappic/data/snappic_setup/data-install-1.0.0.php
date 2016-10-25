@@ -18,6 +18,11 @@ $oauthHelper = Mage::helper('oauth');
 /** @var AltoLabs_Snappic_Connect */
 $connect = Mage::getSingleton('altolabs_snappic/connect');
 
+
+// ---------------------------------------------------------------------------- //
+// -------------------------------- SOAP Setup -------------------------------- //
+// ---------------------------------------------------------------------------- //
+
 Mage::log('Checking for SOAP user...', null, 'snappic.log');
 $apiUser = Mage::getModel('api/user')->load('Snappic', 'username');
 if (!$apiUser->getId()) {
@@ -43,6 +48,7 @@ if (!$apiParentRole->getId()) {
       ->setRoleType('G')
       ->save();
 }
+
 Mage::log('Checking for SOAP user role...', null, 'snappic.log');
 $apiRole = Mage::getModel('api/roles')->load('Snappic', 'role_name');
 if (!$apiRole->getId()) {
@@ -65,6 +71,10 @@ if (!$apiRole->getId()) {
      ->save();
 
 
+// ---------------------------------------------------------------------------- //
+// -------------------------------- REST Setup -------------------------------- //
+// ---------------------------------------------------------------------------- //
+
 Mage::log('Checking for the admin user...', null, 'snappic.log');
 $user = Mage::getModel('admin/user')->load('admin', 'username');
 Mage::log('Got admin user with id '.$user->getId().'.', null, 'snappic.log');
@@ -78,7 +88,6 @@ if (!$adminRole->getId()) {
         ->setData(array('role_name' => 'Admin'))
         ->save();
 }
-# TODO: Add $user to the $adminRole REST role.
 
 Mage::log('Configuring REST ACL Rules...', null, 'snappic.log');
 foreach (array('snappic_product', 'snappic_store') as $snappicResource) {
@@ -122,6 +131,14 @@ foreach ($aclsByResource as $resource => $attributes) {
         ->save();
 }
 
+Mage::Log('Assigning REST Admin role to Admin user...', null, 'snappic.log');
+$roleResModel = Mage::getResourceModel('api2/acl_global_role')
+$roleResModel->saveAdminToRoleRelation($user->getId(), $adminRole->getId());
+
+
+// ---------------------------------------------------------------------------- //
+// ------------------------------- OAuth Setup -------------------------------- //
+// ---------------------------------------------------------------------------- //
 
 Mage::log('Preparing the Snappic OAuth Consumer...', null, 'snappic.log');
 $consumer = Mage::getModel('oauth/consumer')->load('Snappic', 'name');
@@ -139,12 +156,21 @@ if (!$consumer->getId()) {
         )->save();
 }
 
+
+// ---------------------------------------------------------------------------- //
+// -------------------------------- Other Setup ------------------------------- //
+// ---------------------------------------------------------------------------- //
+
 Mage::log('Ensuring a Facebook pixel ID is set...', null, 'snappic.log');
 $facebookId = $connect->getFacebookId();
 
 $key = $consumer->getKey();
 $secret = $consumer->getSecret();
-$connect->setSendable(array('key' => $key, 'secret' => $secret, 'facebook_id' => $facebookId))
+$connect->setSendable(array(
+          'key' => $key,
+          'secret' => $secret,
+          'facebook_id' => $facebookId
+        ))
         ->notifySnappicApi('application/installed');
 
 $message = "AltoLabs Snappic Setup successfuly completed with ".
