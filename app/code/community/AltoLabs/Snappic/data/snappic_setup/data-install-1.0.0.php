@@ -132,7 +132,7 @@ foreach ($aclsByResource as $resource => $attributes) {
 }
 
 Mage::Log('Assigning REST Admin role to Admin user...', null, 'snappic.log');
-$roleResModel = Mage::getResourceModel('api2/acl_global_role')
+$roleResModel = Mage::getResourceModel('api2/acl_global_role');
 $roleResModel->saveAdminToRoleRelation($user->getId(), $adminRole->getId());
 
 
