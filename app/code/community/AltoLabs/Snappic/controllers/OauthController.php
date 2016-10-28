@@ -24,9 +24,11 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
 
     protected function indexBodyBlock() {
       $helper = Mage::helper('altolabs_snappic');
-      $baseUrl = Mage::getBaseUrl();
       $domain = $helper->getDomain();
       $adminHtml = $helper->getAdminHtmlPath();
+
+      $components = parse_url(Mage::getBaseUrl());
+      $baseUrl = $components['host'].$components['path'];
 
       $consumer = Mage::getModel('oauth/consumer')->load('Snappic', 'name');
       $consumerKey = $consumer->getKey();
