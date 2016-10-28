@@ -24,6 +24,7 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
 
     protected function indexBodyBlock() {
       $helper = Mage::helper('altolabs_snappic');
+      $baseUrl = Mage::getBaseUrl();
       $domain = $helper->getDomain();
       $adminHtml = $helper->getAdminHtmlPath();
 
@@ -142,10 +143,10 @@ Snappic.init = function () {
   this._oauth = new OAuth({
     consumerKey: '$consumerKey',
     consumerSecret: '$consumerSecret',
-    requestTokenUrl: p + '//$domain/oauth/initiate',
-    authorizationUrl: p + '//$domain/$adminHtml/oauth_authorize',
-    accessTokenUrl: p + '//$domain/oauth/token',
-    callbackUrl: p + '//$domain/shopinsta/oauth/callback'
+    requestTokenUrl: p + '//$baseUrl/oauth/initiate',
+    authorizationUrl: p + '//$baseUrl/$adminHtml/oauth_authorize',
+    accessTokenUrl: p + '//$baseUrl/oauth/token',
+    callbackUrl: p + '//$baseUrl/shopinsta/oauth/callback'
   });
   this._oauth.fetchRequestToken(function(url) {
     console.log(url);
