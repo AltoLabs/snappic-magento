@@ -34,6 +34,8 @@ class AltoLabs_Snappic_OauthController extends Mage_Core_Controller_Front_Action
       $consumerKey = $consumer->getKey();
       $consumerSecret = $this->getRequest()->getParam('secret');
 
+      $snappicAdminUrl = $helper->getSnappicAdminUrl();
+
       $payload = <<<HTML
 <style>
 #snappic_output, .snappic-msg {
@@ -127,8 +129,8 @@ Snappic.setPin = function(pin) {
   this._oauth.setVerifier(pin);
   this._oauth.fetchAccessToken( function() {
     this.show(5);
-    token = '$consumerKey:$consumerSecret:' + this._oauth.getAccessTokenKey() + ':' + this._oauth.getAccessTokenSecret();
-    window.location = 'http://www.snappic.io?' + 'provider=magento&domain=' + encodeURIComponent('$domain') + '&access_token=' + encodeURIComponent(token);
+    token = '$consumerKey:$consumerSecret:'+this._oauth.getAccessTokenKey()+':'+this._oauth.getAccessTokenSecret();
+    window.location = '${snappicAdminUrl}?provider=magento&domain='+encodeURIComponent('$domain')+'&access_token='+encodeURIComponent(token);
   }.bind(this), function(data) {
     this.show(6);
     console.error(data);
@@ -145,10 +147,10 @@ Snappic.init = function () {
   this._oauth = new OAuth({
     consumerKey: '$consumerKey',
     consumerSecret: '$consumerSecret',
-    requestTokenUrl: p + '//$baseUrl/oauth/initiate',
-    authorizationUrl: p + '//$baseUrl/$adminHtml/oauth_authorize',
-    accessTokenUrl: p + '//$baseUrl/oauth/token',
-    callbackUrl: p + '//$baseUrl/shopinsta/oauth/callback'
+    requestTokenUrl: p+'//$baseUrl/oauth/initiate',
+    authorizationUrl: p+'//$baseUrl/$adminHtml/oauth_authorize',
+    accessTokenUrl: p+'//$baseUrl/oauth/token',
+    callbackUrl: p+'//$baseUrl/shopinsta/oauth/callback'
   });
   this._oauth.fetchRequestToken(function(url) {
     console.log(url);
