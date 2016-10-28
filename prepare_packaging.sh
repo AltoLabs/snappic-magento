@@ -33,7 +33,7 @@ for var in "${files[@]}"; do
   php obfuscate.php "../app/code/community/AltoLabs/Snappic/Model/${var}.php"
 done
 
-php packager.php --composer ../../Snappic/composer.json
+# php packager.php --composer ../../Snappic/composer.json
 
-echo "Moving package..."
-mv ../var/connect/AltoLabs_Snappic*.tgz ../../Snappic/
+# echo "Moving package..."
+# mv ../var/connect/AltoLabs_Snappic*.tgz ../../Snappic/
