@@ -16,7 +16,7 @@ for var in "${files[@]}"; do
 done
 
 echo "  -> migrations..."
-files=(data-install-0.0.1 data-upgrade-0.0.1-0.0.2 data-upgrade-0.0.2-0.0.3 data-upgrade-0.0.3-0.0.4)
+files=(data-install-1.0.0)
 for var in "${files[@]}"; do
   php obfuscate.php "../app/code/community/AltoLabs/Snappic/data/snappic_setup/${var}.php"
 done
