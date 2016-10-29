@@ -45,11 +45,6 @@ class AltoLabs_Snappic_CartController extends Mage_Core_Controller_Front_Action
                 }
                 $cart->save();
                 $this->_getSession()->setCartWasUpdated(true);
-                Mage::dispatchEvent('checkout_cart_add_product_complete', array(
-                    'product' => $product,
-                    'request' => $this->getRequest(),
-                    'response' => $this->getResponse())
-                );
                 $this->_output(array(
                     'status' => 'success',
                     'total' => ($cart->getQuote()->getSubtotal() ?: '0.00')
