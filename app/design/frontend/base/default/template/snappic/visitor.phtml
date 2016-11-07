@@ -8,9 +8,11 @@
  */
 
 $id = Mage::getModel('altolabs_snappic/connect')->getFacebookId();
-if (empty($id)) {
-    return;
-}
+if (empty($id)) { return; }
+
+$session = Mage::getSingleton('core/session');
+$product = $session->getCartProductJustAdded();
+$session->unsCartProductJustAdded();
 ?>
 <script>
 if (typeof fbq !== 'function') {
@@ -18,7 +20,15 @@ if (typeof fbq !== 'function') {
   fbq('init', '<?php echo($id); ?>');
   fbq('track', 'PageView');
 }
+<?php if ($product && $product->getId()) { ?>
+fbq('track', 'AddToCart', {
+  value: '<?php echo($total); ?>',
+  currency: '<?php echo($currency); ?>',
+  content_type: 'product',
+  content_ids: ['snappic_<?php echo($product->getId()); ?>'],
+});
 </script>
+<?php } ?>
 <noscript>
   <img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=<?php echo($id); ?>&ev=PageView&noscript=1" />
 </noscript>
