@@ -20,58 +20,6 @@ $connect = Mage::getSingleton('altolabs_snappic/connect');
 
 
 // ---------------------------------------------------------------------------- //
-// -------------------------------- SOAP Setup -------------------------------- //
-// ---------------------------------------------------------------------------- //
-
-Mage::log('Checking for SOAP user...', null, 'snappic.log');
-$apiUser = Mage::getModel('api/user')->load('Snappic', 'username');
-if (!$apiUser->getId()) {
-    Mage::log('Creating...', null, 'snappic.log');
-    $apiKey = Mage::helper('altolabs_snappic')->getSoapApiKey();
-    $apiUser = Mage::getModel('api/user')
-        ->setUsername('Snappic')
-        ->setFirstname('Snappic')
-        ->setLastname('Snappic')
-        ->setEmail('hi@snappic.io')
-        ->setApiKey($apiKey)
-        ->setApiKeyConfirmation($apiKey)
-        ->setIsActive(1)
-        ->save();
-}
-
-Mage::log('Checking for SOAP parent role...', null, 'snappic.log');
-$apiParentRole = Mage::getModel('api/roles')->load('Snappic Role', 'role_name');
-if (!$apiParentRole->getId()) {
-    Mage::log('Creating...', null, 'snappic.log');
-    $apiParentRole = Mage::getModel('api/role')
-      ->setRoleName('Snappic Role')
-      ->setRoleType('G')
-      ->save();
-}
-
-Mage::log('Checking for SOAP user role...', null, 'snappic.log');
-$apiRole = Mage::getModel('api/roles')->load('Snappic', 'role_name');
-if (!$apiRole->getId()) {
-    Mage::log('Creating...', null, 'snappic.log');
-    $apiRole = Mage::getModel('api/role')
-      ->setRoleName('Snappic')
-      ->setParentId($apiParentRole->getId())
-      ->setUserId($apiUser->getId())
-      ->setRoleType('U')
-      ->save();
-}
-
- $resources = array(
-    'cataloginventory', 'cataloginventory/info', 'cart', 'cart/create', 'cart/totals',
-    'cart/product', 'cart/product/add', 'cart/customer', 'cart/customer/set','cart/customer/addresses');
- Mage::getModel("api/rules")
-     ->setRoleId($apiParentRole->getId())
-     ->setResources($resources)
-     ->saveRel()
-     ->save();
-
-
-// ---------------------------------------------------------------------------- //
 // -------------------------------- REST Setup -------------------------------- //
 // ---------------------------------------------------------------------------- //
 
