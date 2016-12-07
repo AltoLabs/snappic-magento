@@ -34,16 +34,6 @@ class AltoLabs_Snappic_Helper_Data extends Mage_Core_Helper_Abstract
         return empty($val) ? $default : $val;
     }
 
-    public function getSoapApiKey() {
-        $apiKey = Mage::getStoreConfig('snappic/general/soap_api_key');
-        if (empty($apiKey)) {
-            Mage::log('Creating a SOAP access API key...', null, 'snappic.log');
-            $apiKey = Mage::helper('oauth')->generateToken();
-            Mage::app()->getConfig()->saveConfig('snappic/general/soap_api_key', $apiKey);
-        }
-        return $apiKey;
-    }
-
     public function getAdminHtmlPath()
     {
         return (string)Mage::app()->getConfig()->getNode('admin/routers/adminhtml/args/frontName') ?: 'admin';

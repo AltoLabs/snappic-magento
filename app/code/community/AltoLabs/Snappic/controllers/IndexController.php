@@ -20,10 +20,7 @@ class AltoLabs_Snappic_IndexController extends Mage_Core_Controller_Front_Action
 
     protected function pageHtml()
     {
-      $soapUsername = 'Snappic';
-      $soapApiKey = Mage::helper('altolabs_snappic')->getSoapApiKey();
       $storeAssetsHost = Mage::helper('altolabs_snappic')->getStoreAssetsHost();
-      $storeId = Mage::app()->getStore()->getStoreId();
       return "
         <div style=\"width:100%;height:auto\"><snpc-main></snpc-main></div>
         <script>
@@ -39,9 +36,7 @@ class AltoLabs_Snappic_IndexController extends Mage_Core_Controller_Front_Action
             enable_checkout_bar: true,
             enable_gallery: false,
             enable_options: false,
-            magento_api_user: '$soapUsername',
-            magento_api_key: '$soapApiKey',
-            magento_api_storeid: '$storeId'
+            enable_magento_json_endpoints: true
           };
         </script>
         <script src=\"$storeAssetsHost/scripts/app.js\" async></script>
