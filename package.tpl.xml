@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<package>
+    <name />
+    <version />
+    <date />
+    <time />
+    <summary />
+    <description />
+    <notes />
+    <stability>stable</stability>
+    <license>MIT</license>
+    <channel>community</channel>
+    <extends />
+    <authors>
+        <author>
+            <name>Edwin Hermawan</name>
+            <user>snappic</user>
+            <email>edwin@altolabs.co</email>
+        </author>
+    </authors>
+    <contents>
+      <target name="magecommunity" base="code/community" />
+      <target name="magedesign" base="design" />
+      <target name="mageetc" base="etc" />
+    </contents>
+    <compatible />
+    <dependencies>
+        <required>
+            <php>
+                <min>5.3.0</min>
+                <max>7.0.0</max>
+            </php>
+        </required>
+    </dependencies>
+</package>

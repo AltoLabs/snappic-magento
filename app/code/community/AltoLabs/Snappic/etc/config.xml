@@ -1,20 +1,11 @@
 <?xml version="1.0"?>
-<!--
-/**
- * This file is Copyright AltoLabs 2016.
- *
- * @category Mage
- * @package  AltoLabs_Snappic
- * @author   AltoLabs <hi@altolabs.co>
- */
--->
+<!-- This file is Copyright AltoLabs 2016. -->
 <config>
     <modules>
         <AltoLabs_Snappic>
             <version>1.0.4</version>
         </AltoLabs_Snappic>
     </modules>
-
     <global>
         <models>
             <altolabs_snappic>
@@ -22,13 +13,11 @@
                 <resourceModel>snappic_resource</resourceModel>
             </altolabs_snappic>
         </models>
-
         <helpers>
             <altolabs_snappic>
                 <class>AltoLabs_Snappic_Helper</class>
             </altolabs_snappic>
         </helpers>
-
         <resources>
             <snappic_setup>
                 <setup>
@@ -37,7 +26,6 @@
                 </setup>
             </snappic_setup>
         </resources>
-
         <events>
             <sales_order_place_after>
                 <observers>
@@ -48,30 +36,14 @@
                 </observers>
             </sales_order_place_after>
         </events>
-
-
         <blocks>
-            <rss>
-                <rewrite>
-                    <list>AltoLabs_Snappic_Block_List</list>
-                    <snappic_store>AltoLabs_Snappic_Block_Snappic_Store</snappic_store>
-                    <snappic_products>AltoLabs_Snappic_Block_Snappic_Products</snappic_products>
-                </rewrite>
-            </rss>
+            <snappic>
+                <class>AltoLabs_Snappic_Block</class>
+            </snappic>
         </blocks>
     </global>
-
     <frontend>
         <routers>
-            <rss>
-               <use>standard</use>
-               <args>
-                  <modules>
-                     <AltoLabs_Snappic before="Mage_Rss">AltoLabs_Snappic</AltoLabs_Snappic>
-                  </modules>
-               </args>
-            </rss>
-
             <shopinsta>
                 <use>standard</use>
                 <args>
@@ -80,7 +52,6 @@
                 </args>
             </shopinsta>
         </routers>
-
         <events>
             <controller_action_predispatch_checkout_cart_add>
                 <observers>
@@ -99,7 +70,6 @@
                 </observers>
             </controller_action_predispatch>
         </events>
-
         <layout>
             <updates>
                 <snappic>
@@ -108,7 +78,6 @@
             </updates>
         </layout>
     </frontend>
-
     <adminhtml>
         <events>
             <controller_action_predispatch>
@@ -119,7 +88,6 @@
                     </altolabs_snappic_observer_admin_displayed>
                 </observers>
             </controller_action_predispatch>
-
             <catalog_product_save_after>
                 <observers>
                     <altolabs_snappic_observer_product_after_save>
@@ -128,7 +96,6 @@
                     </altolabs_snappic_observer_product_after_save>
                 </observers>
             </catalog_product_save_after>
-
             <catalog_product_attribute_update_after>
                 <observers>
                     <altolabs_snappic_observer_product_update_after>
@@ -137,7 +104,6 @@
                     </altolabs_snappic_observer_product_update_after>
                 </observers>
             </catalog_product_attribute_update_after>
-
             <catalog_product_delete_after>
                 <observers>
                     <altolabs_snappic_observer_product_delete_after>
@@ -148,11 +114,10 @@
             </catalog_product_delete_after>
         </events>
     </adminhtml>
-
     <phpunit>
         <suite>
             <modules>
-                <AltoLabs_Snappic/>
+                <AltoLabs_Snappic />
             </modules>
         </suite>
     </phpunit>

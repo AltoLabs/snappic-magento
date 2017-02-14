@@ -1,0 +1,108 @@
+#!/usr/bin/env ruby
+
+%w(rubygems optionparser digest base64 nokogiri fileutils tmpdir).each { |g| require g }
+
+class Packager
+  attr_reader :opts
+
+  def initialize(opts = {})
+    @opts = opts
+    read_xml_config
+  end
+
+  def run
+    Dir.mktmpdir do |tmpdir|
+      log "Running in temporary directory #{tmpdir}..."
+      FileUtils.copy_entry opts[:src], "#{tmpdir}/app"
+
+      log "Obfuscating tree at #{tmpdir}/app..."
+      obfuscate_php_tree "#{tmpdir}/app"
+
+      log "Writting manifest for #{tmpdir}..."
+      write_xml_manifest tmpdir
+
+      log archive_path = "#{opts[:dst]}/#{opts[:name].downcase}-#{opts[:version]}.tgz"
+      log "Making archive at #{archive_path}..."
+      `cd #{tmpdir}; tar cvzf "#{archive_path}" *; cp #{archive_path} ~`
+    end
+  end
+
+  private
+
+  def log(what)
+    puts what if opts[:verbose]
+  end
+
+  def read_xml_config
+    log "Reading XML config..."
+    path = "#{opts[:src]}/code/community/#{opts[:vendor]}/#{opts[:name]}/etc/config.xml"
+    xpath = "/config/modules/#{opts[:vendor]}_#{opts[:name]}/version"
+    opts[:version] = read_xml(path).xpath(xpath).first.content
+    opts[:mtime] = File.mtime path
+    log "Found mtime #{opts[:mtime]} version #{opts[:version]}."
+  end
+
+  def obfuscate_php_tree(path)
+    Dir["#{path}/*"].each do |entry|
+      if File.directory? entry
+        obfuscate_php_tree entry
+      elsif File.file?(entry) && entry.split('.').last == 'php'
+        data = File.read(entry).gsub("<?php\n", '')
+        data = Base64.encode64(data).gsub(/\n/, '')
+        data = "<?php\r\neval(base64_decode(\"#{data}\"));"
+        File.write entry, data
+      end
+    end
+  end
+
+  def write_xml_manifest(path)
+    xml = read_xml opts[:tpl]
+    xml.xpath('/package/name').first.content = opts[:name]
+    xml.xpath('/package/version').first.content = opts[:version]
+    xml.xpath('/package/date').first.content = opts[:mtime].strftime '%F'
+    xml.xpath('/package/time').first.content = opts[:mtime].strftime '%T'
+    %i(summary description notes).each do |col|
+      xml.xpath("/package/#{col}").first.content = "The #{opts[:vendor]} #{opts[:name]} extension."
+    end
+
+    xml.xpath('/package/contents/target').each do |node|
+      log "  Targetting #{node[:name]} at #{node[:base]}."
+      build_target_node node, "#{path}/app/#{node[:base]}"
+      node.delete 'base'
+    end
+
+    File.write "#{path}/package.xml", xml
+  end
+
+  def build_target_node(node, path)
+    Dir["#{path}/*"].each do |entry|
+      if File.directory? entry
+        child_node = node.add_child("<dir name=\"#{entry.split('/').last}\" />").first
+        build_target_node child_node, entry
+      elsif File.file? entry
+        hash = Digest::MD5.hexdigest File.read entry
+        file = entry.split('/').last
+        log "    Adding #{file} with hash #{hash}..."
+        node.add_child "<file name=\"#{file}\" hash=\"#{hash}\"/>"
+      end
+    end
+  end
+
+  def read_xml(path)
+    Nokogiri::XML File.read path
+  end
+end
+
+opts = {}
+OptionParser.new do |op|
+  op.banner = "Usage: packager [opts]"
+  op.on('--template TPL', 'Template path') { |v| opts[:tpl] = File.expand_path v }
+  op.on('--source SRC', 'Source folder') { |v| opts[:src] = File.expand_path v }
+  op.on('--destination DEST', 'Destination folder') { |v| opts[:dst] = File.expand_path v }
+  op.on('--vendor VENDOR', 'Vendor name') { |v| opts[:vendor] = v }
+  op.on('--name NAME', 'Extension name') { |v| opts[:name] = v }
+  op.on('--verbose', 'Run verbosely') { |v| opts[:verbose] = v }
+end.parse!
+
+Packager.new(opts)
+        .run

@@ -1,0 +1,63 @@
+#!/bin/bash
+
+pushd `dirname $0` > /dev/null
+SCRIPT_PATH=`pwd`
+popd > /dev/null
+EXT_ROOT=$SCRIPT_PATH
+MAGENTO_ROOT=`dirname $EXT_ROOT`
+
+if [ ! -f ${MAGENTO_ROOT}/web/index.php ]; then
+  echo "This script is misplaced, exiting."
+  exit 0
+fi
+
+function install() {
+  echo "Installing Snappic Magento Extension to local instance..."
+  cp -R ${EXT_ROOT}/app/* ${MAGENTO_ROOT}/web/app/
+}
+
+function uninstall() {
+  echo "Removing Snappic Magento Extension from local instance..."
+  rm -rf ${MAGENTO_ROOT}/web/app/code/community/AltoLabs \
+         ${MAGENTO_ROOT}/web/app/etc/modules/AltoLabs_Snappic.xml \
+         ${MAGENTO_ROOT}/web/app/design/frontend/base/default/layout/snappic.xml \
+         ${MAGENTO_ROOT}/web/app/design/frontend/base/default/template/snappic
+}
+
+function reinstall() {
+  uninstall
+  install
+}
+
+case $1 in
+  'install')
+    install
+    ;;
+
+  'uninstall')
+    uninstall
+    ;;
+
+  'reinstall')
+    reinstall
+    ;;
+
+  'watch' )
+    reinstall
+    while inotifywait -qre close_write .; do
+      reinstall
+    done
+    ;;
+
+  'package')
+    ./packager --verbose \
+               --template=package.tpl.xml \
+               --source=app \
+               --destination=releases \
+               --vendor=AltoLabs \
+               --name=Snappic
+    ;;
+  *)
+    echo "Invalid argument $1. Usage: manage [install|uninstall|package]"
+    exit 0
+esac
