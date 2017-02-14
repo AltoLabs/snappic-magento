@@ -1,23 +1,16 @@
 <?php
-/**
- * This file is Copyright AltoLabs 2016.
- *
- * @category Mage
- * @package  AltoLabs_Snappic
- * @author   AltoLabs <hi@altolabs.co>
- */
+/* This file is Copyright AltoLabs 2016. */
 
 $id = Mage::getModel('altolabs_snappic/connect')->getFacebookId();
 if (empty($id)) {
-    return;
+  return;
 }
 
 $orderId = Mage::getSingleton('checkout/session')->getLastOrderId();
 if (!$orderId || intval($orderId) < 1) {
-    return;
+  return;
 }
 
-/** @var Mage_Sales_Model_Order $order */
 $order = Mage::getModel('sales/order')->load($orderId);
 $total = round($order->getGrandTotal(), 2);
 $currency = Mage::app()->getStore()->getCurrentCurrencyCode();
@@ -25,7 +18,7 @@ $currency = Mage::app()->getStore()->getCurrentCurrencyCode();
 $items = $items = $order->getAllVisibleItems();
 $productIds = array();
 foreach ($items as $item) {
-    $productIds[] = "'snappic_" . $item->getProductId() . "'";
+  $productIds[] = "'snappic_" . $item->getProductId() . "'";
 }
 ?>
 <script>
