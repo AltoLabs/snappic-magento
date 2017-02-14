@@ -1,0 +1,86 @@
+#!/usr/bin/env ruby
+
+%w(rubygems digest base64 nokogiri fileutils tmpdir).each { |g| require g }
+
+class Packager
+  attr_reader :src, :dst
+
+  def initialize(opts = {})
+    @src = opts.fetch :source
+    @dst = opts.fetch :destination
+    @vendor = opts.fetch :vendor
+    @extension = opts.fetch :extension
+    @version = ext_xml.xpath("/config/modules/#{@vendor}_#{@extension}/version")
+                      .first.content
+  end
+
+  def run
+    Dir.mktmpdir do |tmpdir|
+      puts "Packaging version #{@version} into #{tmpdir}..."
+      FileUtils.copy_entry src, "#{tmpdir}/app"
+      obfuscate_php_tree tmpdir
+      write_xml_manifest tmpdir
+      `cd #{tmpdir}; tar cvzf #{dst}/snappic-#{@version}.tgz *`
+    end
+  end
+
+  private
+
+  def obfuscate_php_tree(path)
+    Dir["#{path}/*"].each do |e|
+      if File.directory? e
+        obfuscate_php_tree e
+      elsif File.file?(e) && e.split('.').last == 'php'
+        data = File.read(e).gsub("<?php\n", '')
+        data = Base64.encode64(data).gsub(/\n/, '')
+        data = "<?php\r\neval(base64_decode(\"#{data}\"));"
+        File.write e, data
+      end
+    end
+  end
+
+  def write_xml_manifest(path)
+    now = Time.now
+    xml = read_xml 'package.tpl.xml'
+    xml.xpath('/package/version').first.content = @version
+    xml.xpath('/package/date').first.content = now.strftime '%F'
+    xml.xpath('/package/time').first.content = now.strftime '%T'
+    %i(summary description notes).each do |col|
+      xml.xpath("/package/#{col}").first.content = "The #{@vendor} #{@extension} extension."
+    end
+
+    xml.xpath('/package/contents/target').each do |node|
+      node.delete 'base'
+      build_target_node node, "#{path}/app/#{node[:base]}"
+    end
+
+    File.write "#{path}/package.xml", xml
+  end
+
+  def build_target_node(node, path)
+    Dir["#{path}/*"].each do |e|
+      if File.directory? e
+        child_node = node.add_child("<dir name=\"#{e.split('/').last}\" />").first
+        build_target_node child_node, e
+      elsif File.file? e
+        hash = Digest::MD5.hexdigest File.read e
+        node.add_child "<file name=\"#{e.split('/').last}\" hash=\"#{hash}\"/>"
+      end
+    end
+  end
+
+  def read_xml(path)
+    Nokogiri::XML File.read path
+  end
+
+  def ext_xml
+    read_xml "#{src}/code/community/#{@vendor}/#{@extension}/etc/config.xml"
+  end
+end
+
+Packager.new(
+  source: File.expand_path(ARGV[0]),
+  destination: File.expand_path(ARGV[1]),
+  vendor: 'AltoLabs',
+  extension: 'Snappic'
+).run
