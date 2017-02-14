@@ -11,7 +11,7 @@
 <config>
     <modules>
         <AltoLabs_Snappic>
-            <version>1.0.3</version>
+            <version>1.0.4</version>
         </AltoLabs_Snappic>
     </modules>
 
@@ -48,17 +48,37 @@
                 </observers>
             </sales_order_place_after>
         </events>
+
+
+        <blocks>
+            <rss>
+                <rewrite>
+                    <list>AltoLabs_Snappic_Block_List</list>
+                    <snappic_store>AltoLabs_Snappic_Block_Snappic_Store</snappic_store>
+                    <snappic_products>AltoLabs_Snappic_Block_Snappic_Products</snappic_products>
+                </rewrite>
+            </rss>
+        </blocks>
     </global>
 
     <frontend>
         <routers>
-            <snappic>
+            <rss>
+               <use>standard</use>
+               <args>
+                  <modules>
+                     <AltoLabs_Snappic before="Mage_Rss">AltoLabs_Snappic</AltoLabs_Snappic>
+                  </modules>
+               </args>
+            </rss>
+
+            <shopinsta>
                 <use>standard</use>
                 <args>
                     <module>AltoLabs_Snappic</module>
                     <frontName>shopinsta</frontName>
                 </args>
-            </snappic>
+            </shopinsta>
         </routers>
 
         <events>

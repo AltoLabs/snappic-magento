@@ -7,19 +7,16 @@
  * @author   AltoLabs <hi@altolabs.co>
  */
 
-class AltoLabs_Snappic_IndexController extends Mage_Core_Controller_Front_Action
-{
-    public function indexAction()
-    {
+class AltoLabs_Snappic_IndexController extends Mage_Core_Controller_Front_Action {
+    public function indexAction() {
         $this->loadLayout();
         $block = $this->getLayout()->createBlock('core/text');
-        $block->setText($this->pageHtml());
+        $block->setText($this->indexPageHtml());
         $this->getLayout()->getBlock('content')->append($block);
         $this->renderLayout();
     }
 
-    protected function pageHtml()
-    {
+    protected function indexPageHtml() {
       $storeAssetsHost = Mage::helper('altolabs_snappic')->getStoreAssetsHost();
       return "
         <div style=\"width:100%;height:auto\"><snpc-main></snpc-main></div>

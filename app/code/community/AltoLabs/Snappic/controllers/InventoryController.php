@@ -7,10 +7,8 @@
  * @author   AltoLabs <hi@altolabs.co>
  */
 
-class AltoLabs_Snappic_InventoryController extends Mage_Core_Controller_Front_Action
-{
-    public function indexAction()
-    {
+class AltoLabs_Snappic_InventoryController extends Mage_Core_Controller_Front_Action {
+    public function indexAction() {
         $core = Mage::helper('core');
         $helper = Mage::helper('altolabs_snappic');
         $payload = $core->jsonDecode($this->getRequest()->getRawBody());

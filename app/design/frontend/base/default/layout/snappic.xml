@@ -31,4 +31,8 @@
             <block type="core/template" template="snappic/conversion.phtml" />
         </reference>
     </checkout_multishipping_success>
+
+    <rss_catalog_normalized>
+       <block type="rss/catalog_normalized" output="toHtml" name="rss.catalog.normalized" />
+    </rss_catalog_normalized>
 </layout>

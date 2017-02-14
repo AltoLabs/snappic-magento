@@ -7,13 +7,8 @@
  * @author   AltoLabs <hi@altolabs.co>
  */
 
-class AltoLabs_Snappic_CartController extends Mage_Core_Controller_Front_Action
-{
-
-    protected $_cookieCheckActions = array('add', 'total', 'clear');
-
-    public function preDispatch()
-    {
+class AltoLabs_Snappic_CartController extends Mage_Core_Controller_Front_Action {
+    public function preDispatch() {
         parent::preDispatch();
         $cart = $this->_getCart();
         if ($cart->getQuote()->getIsMultiShipping()) {
@@ -22,16 +17,14 @@ class AltoLabs_Snappic_CartController extends Mage_Core_Controller_Front_Action
         return $this;
     }
 
-    public function totalAction()
-    {
+    public function totalAction() {
         $this->_output(array(
             'status' => 'success',
             'total' => ($this->_getCart()->getQuote()->getSubtotal() ?: '0.00')
         ));
     }
 
-    public function addAction()
-    {
+    public function addAction() {
         $cart = $this->_getCart();
         $payload = Mage::helper('core')->jsonDecode($this->getRequest()->getRawBody());
         $product = Mage::helper('altolabs_snappic')
@@ -72,18 +65,15 @@ class AltoLabs_Snappic_CartController extends Mage_Core_Controller_Front_Action
         ));
     }
 
-    protected function _getSession()
-    {
+    protected function _getSession() {
         return Mage::getSingleton('checkout/session');
     }
 
-    protected function _getCart()
-    {
+    protected function _getCart() {
         return Mage::getSingleton('checkout/cart');
     }
 
-    protected function _output($data)
-    {
+    protected function _output($data) {
         $this->getResponse()->setHeader('Content-type', 'application/json');
         $this->getResponse()->setBody(json_encode($data));
     }

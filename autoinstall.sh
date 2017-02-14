@@ -1,8 +1,10 @@
 #!/bin/sh
-RUN="./install.sh"
 
-$RUN
+./uninstall.sh
+./install.sh
+
 while inotifywait -qre close_write .
 do
-  $RUN
+  ./uninstall.sh
+  ./install.sh
 done
