@@ -20,14 +20,14 @@ class AltoLabs_Snappic_CartController extends Mage_Core_Controller_Front_Action 
 
   public function addAction() {
     $cart = $this->_getCart();
+    $storeId = Mage::app()->getStore()->getId();
     $payload = Mage::helper('core')->jsonDecode($this->getRequest()->getRawBody());
-    $product = Mage::helper('altolabs_snappic')
-                  ->getProductBySku($payload['sku'])
-                  ->setStoreId(Mage::app()->getStore()->getId());
+    $product = Mage::getModel('catalog/product')->load($payload['id'])
+                                                ->setStoreId($storeId);
     if ($product->getId()) {
-      try {
         $cart->addProduct($product);
-        if (!$cart->getCustomerSession()->getCustomer()->getId() && $cart->getQuote()->getCustomerId()) {
+        if (!$cart->getCustomerSession()->getCustomer()->getId() &&
+            $cart->getQuote()->getCustomerId()) {
           $cart->getQuote()->setCustomerId(null);
         }
         $cart->save();

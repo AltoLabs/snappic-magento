@@ -6,8 +6,8 @@ popd > /dev/null
 EXT_ROOT=$SCRIPT_PATH
 MAGENTO_ROOT=`dirname $EXT_ROOT`
 
-if [ ! -f ${MAGENTO_ROOT}/web/index.php ]; then
-  echo "This script is misplaced, exiting."
+if [ ! -d ${MAGENTO_ROOT}/web/app ]; then
+  echo "This script is misplaced (${MAGENTO_ROOT}/web/app not found), exiting."
   exit 0
 fi
 

@@ -56,7 +56,7 @@ class Altolabs_Snappic_Model_Observer {
     $domain = $helper->getDomain();
     $token = $helper->getToken();
     $secret = $helper->getSecret();
-    $link = $helper->getSnappicAdminUrl().'/?login&provider=magento&domain='.urlencode($domain).'&access_token='.urlencode($token.':'.$secret);
+    $link = $helper->getSnappicAdminUrl().'/?login&pricing&provider=magento&domain='.urlencode($domain).'&access_token='.urlencode($token.':'.$secret);
 
     $html = <<<HTML
 <img src="http://snappic.io/static/img/general/logo.svg" style="padding:10px;background-color:#E85B52;">
@@ -87,14 +87,32 @@ HTML;
       $product = Mage::getModel('catalog/product')->load($productId);
       // Product is configurable, send it directly.
       if ($product->isConfigurable()) {
-        $data[] = $helper->getSendableProductData($product);
+        // If the product gets disabled, directly delete it.
+        if ((int)$product->getStatus() != Mage_Catalog_Model_Product_Status::STATUS_ENABLED) {
+          $this->getConnect()
+               ->setSendable(array($helper->getSendableProductData($product)))
+               ->notifySnappicApi('products/delete');
+        }
+        // Schedule an update for this product.
+        else {
+          $data[] = $helper->getSendableProductData($product);
+        }
       }
       // Product is simple. It might be part of a configurable or not...
       else {
         $parentIds = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild($productId);
         // No parent IDs, product can be sent directly.
         if (count($parentIds) == 0) {
-          $data[] = $helper->getSendableProductData($product);
+          // If the product gets disabled, directly delete it.
+          if ((int)$product->getStatus() != Mage_Catalog_Model_Product_Status::STATUS_ENABLED) {
+            $this->getConnect()
+                 ->setSendable(array($helper->getSendableProductData($product)))
+                 ->notifySnappicApi('products/delete');
+          }
+          // Schedule an update for this product.
+          else {
+            $data[] = $helper->getSendableProductData($product);
+          }
         }
         // Got parent IDs, send them instead.
         else {
@@ -114,7 +132,7 @@ HTML;
     }
   }
 
-  public function onProductAfterDelete(Varien_Event_Observer $observer) {
+  public function onProductBeforeDelete(Varien_Event_Observer $observer) {
     $data = [];
     $action = 'products/';
     $helper = $this->getHelper();
@@ -126,6 +144,7 @@ HTML;
     }
     // Product is simple, it might be part of a configurable or not...
     else {
+      $productId = (int)$product->getId();
       $parentIds = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild($productId);
       // No parent IDs, product can be sent directly.
       if (count($parentIds) == 0) {
@@ -139,7 +158,16 @@ HTML;
           $parent = Mage::getModel('catalog/product')->load($parentId);
           // Save the parent to force the updated_at column to have changed.
           $parent->save();
-          $data[] = $helper->getSendableProductData($parent);
+          // We want to change the variants on this configurable, so it does
+          // not include the deleted child.
+          $parentData = $helper->getSendableProductData($parent);
+          $variants = [];
+          foreach ($parentData['variants'] as $variant) {
+            if ((int)$variant['id'] == $productId) { continue; }
+            $variants[] = $variant;
+          }
+          $parentData['variants'] = $variants;
+          $data[] = $parentData;
         }
       }
     }

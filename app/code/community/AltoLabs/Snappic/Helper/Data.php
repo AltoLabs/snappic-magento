@@ -53,25 +53,45 @@ class AltoLabs_Snappic_Helper_Data extends Mage_Core_Helper_Abstract {
     return $data[$what];
   }
 
-  public function getProductBySku($sku) {
-    return Mage::getModel('catalog/product')->load(
-      Mage::getModel('catalog/product')->getIdBySku($sku)
-    );
-  }
-
-  public function getProductStockBySku($sku) {
-    $product = $model->loadByProduct($this->getProductBySku($sku));
-    return $this->getProductStock($product);
-  }
-
   protected function getProductStock(Mage_Catalog_Model_Product $product) {
-    $model = Mage::getModel('cataloginventory/stock_item');
+    // Product is simple...
+    if (!$product->isConfigurable()) {
+      $productId = $product->getId();
+      // If *any* of the parent isn't in stock, we consider this product isn't.
+      $parentIds = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild($productId);
+      if (count($parentIds) != 0) {
+        foreach ($parentIds as $parentId) {
+          $parent = Mage::getModel('catalog/product')->load($parentId);
+          try {
+            $stockItem = $this->getProductStockItem($parent);
+            if ($stockItem->getManageStock() && !$stockItem->getIsInStock()) {
+              return 0;
+            }
+          } catch (Exception $e) {
+            continue;
+          }
+        }
+      }
+    }
+
     try {
-      $stockItem = $model->loadByProduct($product);
-      return $stockItem->getManageStock() ? (int)$stockItem->getQty() : 99;
+      $stockItem = $this->getProductStockItem($product);
+      if ($stockItem->getManageStock()) {
+        if ($stockItem->getIsInStock()) {
+          return (int)$stockItem->getQty();
+        } else {
+          return 0;
+        }
+      } else {
+        return 99;
+      }
     } catch (Exception $e) {
       return 99;
     }
+  }
+
+  protected function getProductStockItem(Mage_Catalog_Model_Product $product) {
+    return Mage::getModel('cataloginventory/stock_item')->loadByProduct($product);
   }
 
   public function getSendableOrderData(Mage_Sales_Model_Order $order) {
@@ -103,37 +123,44 @@ class AltoLabs_Snappic_Helper_Data extends Mage_Core_Helper_Abstract {
 
   public function getSendableProductData(Mage_Catalog_Model_Product $product) {
     return array(
-      'id'            => $product->getId(),
-      'title'         => $product->getName(),
-      'body_html'     => $product->getDescription(),
-      'price'         => $product->getPrice(),
-      'quantity'      => $this->getProductStock($product),
-      'handle'        => $product->getUrlKey(),
-      'variants'      => $this->getSendableVariantsData($product),
-      'images'        => $this->getSendableImagesData($product),
-      'options'       => $this->getSendableOptionsData($product),
-      'updated_at'    => $product->getUpdatedAt(),
-      'published_at'  => $product->getUpdatedAt()
+      'id'                  => $product->getId(),
+      'title'               => $product->getName(),
+      'body_html'           => $product->getDescription(),
+      'sku'                 => $product->getSku(),
+      'price'               => $product->getPrice(),
+      'inventory_quantity'  => $this->getProductStock($product),
+      'handle'              => $product->getUrlKey(),
+      'variants'            => $this->getSendableVariantsData($product),
+      'images'              => $this->getSendableImagesData($product),
+      'options'             => $this->getSendableOptionsData($product),
+      'updated_at'          => $product->getUpdatedAt(),
+      'published_at'        => $product->getUpdatedAt()
     );
   }
 
   public function getSendableVariantsData(Mage_Catalog_Model_Product $product) {
+    if (!$product->isConfigurable()) {
+      return array();
+    }
     $sendable = array();
-    if ($product->isConfigurable()) {
-      $model = Mage::getModel('catalog/product_type_configurable');
-      $subProducts = $model->getUsedProducts(null, $product);
-      foreach ($subProducts as $subProduct) {
-        $subProduct->setStoreId($product->getStoreId())
-                   ->load($subProduct->getId());
-        $sendable[] = array(
-          'id'          => $subProduct->getId(),
-          'title'       => $subProduct->getName(),
-          'sku'         => $subProduct->getSku(),
-          'price'       => $subProduct->getPrice(),
-          'quantity'    => $this->getProductStock($subProduct),
-          'updated_at'  => $subProduct->getUpdatedAt()
-        );
+    $subProducts = Mage::getModel('catalog/product_type_configurable')->getUsedProducts(null, $product);
+    foreach ($subProducts as $subProduct) {
+      // Assign store and load sub product.
+      $subProduct->setStoreId($product->getStoreId())
+                 ->load($subProduct->getId());
+      // Variant is disabled, consider that it's deleted and just don't add it.
+      if ((int)$subProduct->getStatus() != Mage_Catalog_Model_Product_Status::STATUS_ENABLED) {
+        continue;
       }
+      // Add variant data to array.
+      $sendable[] = array(
+        'id'                  => $subProduct->getId(),
+        'title'               => $subProduct->getName(),
+        'sku'                 => $subProduct->getSku(),
+        'price'               => $subProduct->getPrice(),
+        'inventory_quantity'  => $this->getProductStock($subProduct),
+        'updated_at'          => $subProduct->getUpdatedAt()
+      );
     }
     return $sendable;
   }
