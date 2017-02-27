@@ -26,18 +26,18 @@ class AltoLabs_Snappic_DataController extends Mage_Core_Controller_Front_Action 
     if (!$this->_verifyToken()) { return $this->_renderUnauthorized(); }
     $this->getResponse()->setHeader('Content-type', 'application/json; charset=UTF-8');
 
-    $_productCollection = Mage::getResourceModel('catalog/product_collection')
-                              ->addFieldToFilter('type_id', Mage_Catalog_Model_Product_Type::TYPE_CONFIGURABLE)
+    $products = Mage::getResourceModel('catalog/product_collection')
                               ->addAttributeToSelect('*')
-                              ->addAttributeToFilter('status', array('eq' => 1))
+                              ->addFieldToFilter('visibility', Mage_Catalog_Model_Product_Visibility::VISIBILITY_BOTH)
+                              ->addAttributeToFilter('status', array('eq' => Mage_Catalog_Model_Product_Status::STATUS_ENABLED))
                               ->setOrder('entity_id', 'desc')
                               ->setCurPage($this->_getPage())
                               ->setPageSize($this->_getPerPage());
 
     $data = array();
     $helper = Mage::helper('altolabs_snappic');
-    if ($_productCollection->getSize()>0) {
-      foreach($_productCollection as $_product) {
+    if ($products->getSize()>0) {
+      foreach($products as $_product) {
         $product = Mage::getModel('catalog/product')->load($_product['entity_id']);
         $data[] = $helper->getSendableProductData($product);
       }

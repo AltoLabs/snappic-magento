@@ -104,14 +104,14 @@
                     </altolabs_snappic_observer_product_update_after>
                 </observers>
             </catalog_product_attribute_update_after>
-            <catalog_product_delete_after>
+            <catalog_product_delete_before>
                 <observers>
-                    <altolabs_snappic_observer_product_delete_after>
+                    <altolabs_snappic_observer_product_delete_before>
                         <class>altolabs_snappic/observer</class>
-                        <method>onProductAfterDelete</method>
-                    </altolabs_snappic_observer_product_delete_after>
+                        <method>onProductBeforeDelete</method>
+                    </altolabs_snappic_observer_product_delete_before>
                 </observers>
-            </catalog_product_delete_after>
+            </catalog_product_delete_before>
         </events>
     </adminhtml>
     <phpunit>
