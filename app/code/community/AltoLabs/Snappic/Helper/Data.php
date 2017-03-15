@@ -53,7 +53,7 @@ class AltoLabs_Snappic_Helper_Data extends Mage_Core_Helper_Abstract {
     return $data[$what];
   }
 
-  protected function getProductStock(Mage_Catalog_Model_Product $product) {
+  public function getProductStock(Mage_Catalog_Model_Product $product) {
     // Product is simple...
     if (!$product->isConfigurable()) {
       $productId = $product->getId();
