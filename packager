@@ -15,8 +15,10 @@ class Packager
       log "Running in temporary directory #{tmpdir}..."
       FileUtils.copy_entry opts[:src], "#{tmpdir}/app"
 
-      log "Obfuscating tree at #{tmpdir}/app..."
-      obfuscate_php_tree "#{tmpdir}/app"
+      if @opts[:obfuscate]
+        log "Obfuscating tree at #{tmpdir}/app..."
+        obfuscate_php_tree "#{tmpdir}/app"
+      end
 
       log "Writting manifest for #{tmpdir}..."
       write_xml_manifest tmpdir
@@ -101,8 +103,8 @@ OptionParser.new do |op|
   op.on('--destination DEST', 'Destination folder') { |v| opts[:dst] = File.expand_path v }
   op.on('--vendor VENDOR', 'Vendor name') { |v| opts[:vendor] = v }
   op.on('--name NAME', 'Extension name') { |v| opts[:name] = v }
-  op.on('--verbose', 'Run verbosely') { |v| opts[:verbose] = v }
+  op.on('--obfuscate', 'Obfuscate code') { |v| opts[:obfuscate] = true }
+  op.on('--verbose', 'Run verbosely') { |v| opts[:verbose] = true }
 end.parse!
 
-Packager.new(opts)
-        .run
+Packager.new(opts).run
