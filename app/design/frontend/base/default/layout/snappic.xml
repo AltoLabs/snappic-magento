@@ -3,13 +3,21 @@
 <layout version="0.1.0">
     <default>
         <reference name="head">
-            <block type="core/template" template="snappic/visitor.phtml" />
+            <block type="core/template" template="snappic/visitor.phtml">
+                <action method="setCacheLifetime">
+                    <lifetime>1800</lifetime>
+                </action>
+            </block>
         </reference>
     </default>
 
     <catalog_product_view>
         <reference name="before_body_end">
-            <block type="core/template" template="snappic/product.phtml" before="-" />
+            <block type="core/template" template="snappic/product.phtml" before="-">
+                <action method="setCacheLifetime">
+                    <lifetime>1800</lifetime>
+                </action>
+            </block>
         </reference>
     </catalog_product_view>
 
