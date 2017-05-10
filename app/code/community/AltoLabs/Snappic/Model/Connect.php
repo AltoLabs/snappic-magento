@@ -49,14 +49,14 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract {
     }
   }
 
-  public function getFacebookId() {
+  public function getFacebookId($fetchWhenNone) {
     $helper = $this->getHelper();
     $configPath = $helper->getConfigPath('facebook/pixel_id');
     $facebookId = Mage::getStoreConfig($configPath);
-    if (empty($facebookId)) {
+    if (empty($facebookId) && $fetchWhenNone) {
+      Mage::log('Fetching a Facebook ID from Snappic API...', null, 'snappic.log');
       $snappicStore = $this->getSnappicStore();
-      if ($snappicStore == null) { return ''; }
-      Mage::log('Trying to fetch Facebook ID from Snappic API...', null, 'snappic.log');
+      if (empty($snappicStore)) { return null; }
       $facebookId = $snappicStore->facebook_pixel_id;
       if (!empty($facebookId)) {
         Mage::log('Got facebook ID from API: ' . $facebookId, null, 'snappic.log');

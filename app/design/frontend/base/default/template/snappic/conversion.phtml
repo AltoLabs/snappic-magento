@@ -1,7 +1,7 @@
 <?php
 /* This file is Copyright AltoLabs 2016. */
 
-$id = Mage::getModel('altolabs_snappic/connect')->getFacebookId();
+$id = Mage::getModel('altolabs_snappic/connect')->getFacebookId(false);
 if (empty($id)) {
   return;
 }
