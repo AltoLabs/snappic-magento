@@ -2,6 +2,8 @@
 /* This file is Copyright AltoLabs 2016. */
 
 class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract {
+  const STORE_DEFAULTS = array('facebook_pixel_id' => null);
+
   protected $_sendable;
 
   public function notifySnappicApi($topic) {
@@ -41,29 +43,31 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract {
     $client->setMethod(Zend_Http_Client::GET);
     try {
       $body = $client->request()->getBody();
-      $snappicStore = Mage::helper('core')->jsonDecode($body, Zend_Json::TYPE_OBJECT);
+      $snappicStore = array_merge(
+        self::STORE_DEFAULTS,
+        Mage::helper('core')->jsonDecode($body)
+      );
       $this->setData('snappicStore', $snappicStore);
       return $snappicStore;
     } catch (Exception $e) {
-      return null;
+      return self::STORE_DEFAULTS;
     }
   }
 
-  public function getFacebookId() {
+  public function getFacebookId($fetchWhenNone) {
     $helper = $this->getHelper();
     $configPath = $helper->getConfigPath('facebook/pixel_id');
-    $facebookId = Mage::getStoreConfig($configPath);
-    if (empty($facebookId)) {
+    $fbId = Mage::getStoreConfig($configPath);
+    if (empty($fbId) && $fetchWhenNone) {
+      Mage::log('Fetching a Facebook ID from Snappic API...', null, 'snappic.log');
       $snappicStore = $this->getSnappicStore();
-      if ($snappicStore == null) { return ''; }
-      Mage::log('Trying to fetch Facebook ID from Snappic API...', null, 'snappic.log');
-      $facebookId = $snappicStore->facebook_pixel_id;
-      if (!empty($facebookId)) {
-        Mage::log('Got facebook ID from API: ' . $facebookId, null, 'snappic.log');
-        Mage::app()->getConfig()->saveConfig($configPath, $facebookId);
+      $fbId = $snappicStore['facebook_pixel_id'];
+      if (!empty($fbId)) {
+        Mage::log('Got a Facebook ID from Snappic API: ' . $fbId, null, 'snappic.log');
+        Mage::app()->getConfig()->saveConfig($configPath, $fbId);
       }
     }
-    return $facebookId;
+    return $fbId;
   }
 
   public function setSendable($sendable) {
