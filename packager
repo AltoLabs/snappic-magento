@@ -103,8 +103,8 @@ OptionParser.new do |op|
   op.on('--destination DEST', 'Destination folder') { |v| opts[:dst] = File.expand_path v }
   op.on('--vendor VENDOR', 'Vendor name') { |v| opts[:vendor] = v }
   op.on('--name NAME', 'Extension name') { |v| opts[:name] = v }
-  op.on('--obfuscate', 'Obfuscate code') { |v| opts[:obfuscate] = true }
-  op.on('--verbose', 'Run verbosely') { |v| opts[:verbose] = true }
+  op.on('--obfuscate', 'Obfuscate code') { |v| opts[:obfuscate] = v }
+  op.on('--verbose', 'Run verbosely') { |v| opts[:verbose] = v }
 end.parse!
 
 Packager.new(opts).run

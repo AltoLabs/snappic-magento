@@ -51,7 +51,6 @@ case $1 in
 
   'package')
     ./packager --verbose \
-               --obfuscate \
                --template=package.tpl.xml \
                --source=app \
                --destination=releases \
