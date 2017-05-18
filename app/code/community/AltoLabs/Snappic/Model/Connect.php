@@ -3,6 +3,7 @@
 
 class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract {
   const STORE_DEFAULTS = array('facebook_pixel_id' => null);
+  const SANDBOX_PIXEL_ID = '123123123';
 
   protected $_sendable;
 
@@ -49,7 +50,8 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract {
     $helper = $this->getHelper();
     $configPath = $helper->getConfigPath('facebook/pixel_id');
     $fbId = Mage::getStoreConfig($configPath);
-    if (empty($fbId) && $fetchWhenNone) {
+    if (!$fetchWhenNone) { return $fbId; }
+    if ((empty($fbId) || ($fbId == self::SANDBOX_PIXEL_ID && $helper->getIsProduction()))) {
       Mage::log('Fetching a Facebook ID from Snappic API...', null, 'snappic.log');
       $snappicStore = $this->getSnappicStore();
       $fbId = $snappicStore['facebook_pixel_id'];

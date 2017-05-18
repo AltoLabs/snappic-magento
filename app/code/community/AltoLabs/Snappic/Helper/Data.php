@@ -3,16 +3,29 @@
 
 class AltoLabs_Snappic_Helper_Data extends Mage_Core_Helper_Abstract {
   const CONFIG_PREFIX = 'snappic/';
+  const API_SANDBOX_HOST_DEFAULT = 'http://api.magento-sandbox.snappic.io';
   const API_HOST_DEFAULT = 'https://api.snappic.io';
   const STORE_ASSETS_HOST_DEFAULT = 'https://store.snappic.io';
   const SNAPPIC_ADMIN_URL_DEFAULT = 'https://www.snappic.io';
 
   public function getApiHost() {
+    if ($this->getIsSandboxed()) {
+      return self::API_SANDBOX_HOST_DEFAULT;
+    }
     return $this->getEnvOrDefault('SNAPPIC_API_HOST', self::API_HOST_DEFAULT);
   }
 
   public function getConfigPath($suffix) {
     return self::CONFIG_PREFIX . $suffix;
+  }
+
+  public function getIsSandboxed() {
+    $configPath = $this->getConfigPath('environment/sandboxed');
+    return Mage::getStoreConfig($configPath) == 1;
+  }
+
+  public function getIsProduction() {
+    return !$this->getIsSandboxed();
   }
 
   public function getStoreAssetsHost() {

@@ -45,26 +45,47 @@ class Altolabs_Snappic_Model_Observer {
     if (!Mage::getSingleton('admin/session')->isLoggedIn()) { return; }
 
     $helper = $this->getHelper();
-    $flagPath = $helper->getConfigPath('system/completion_message');
-    $flag = Mage::getStoreConfig($flagPath);
 
-    if ($flag == 'displayed') { return $this; }
+    if ($helper->getIsSandboxed()) {
+      $flagPath = $helper->getConfigPath('system/sandboxed_message');
+      $flag = Mage::getStoreConfig($flagPath);
 
-    Mage::app()->getConfig()->saveConfig($flagPath, 'displayed');
-    Mage::app()->getConfig()->reinit();
+      if ($flag == 'displayed') { return $this; }
 
-    $domain = $helper->getDomain();
-    $token = $helper->getToken();
-    $secret = $helper->getSecret();
-    $link = $helper->getSnappicAdminUrl().'/?login&pricing&provider=magento&domain='.urlencode($domain).'&access_token='.urlencode($token.':'.$secret);
+      Mage::app()->getConfig()->saveConfig($flagPath, 'displayed');
+      Mage::app()->getConfig()->reinit();
+      Mage::getSingleton('adminhtml/session')->addSuccess(
+        '<img src="http://snappic.io/static/img/general/logo.svg" style="padding:10px;background-color:#E85B52;">'.
+        '<div style="font-size:16px;font-weight:400;letter-spacing:1.2px;line-height: 1.2;border:0;padding:0;'.
+        'margin:24px 4px">The Snappic extension is running in a sandbox. If you\'ve installed it in your '.
+        'production environment, make sure to disable the sandboxing by going to System -> Configuration '.
+        '-> AltoLabs -> Snappic.</div>'
+      );
+    }
 
-    $html = <<<HTML
-<img src="http://snappic.io/static/img/general/logo.svg" style="padding:10px;background-color:#E85B52;">
-<div style="font-size:16px;font-weight:400;letter-spacing:1.2px;line-height: 1.2;border:0;padding:0;margin:24px 4px">Almost done!</div>
-<script>window.Snappic={};window.Snappic.signup=function(){window.location='$link';};</script>
-<img src="http://store.snappic.io/images/magento_continue_signup.png" style="width:100%;max-width:460px;cursor:pointer;" onclick="Snappic.signup()">
-HTML;
-    Mage::getSingleton('adminhtml/session')->addSuccess($html);
+    else {
+      $flagPath = $helper->getConfigPath('system/completion_message');
+      $flag = Mage::getStoreConfig($flagPath);
+
+      if ($flag == 'displayed') { return $this; }
+
+      Mage::app()->getConfig()->saveConfig($flagPath, 'displayed');
+      Mage::app()->getConfig()->reinit();
+
+      $domain = $helper->getDomain();
+      $token = $helper->getToken();
+      $secret = $helper->getSecret();
+      $link = $helper->getSnappicAdminUrl().
+        '/?login&pricing&provider=magento'.
+        '&domain='.urlencode($domain).
+        '&access_token='.urlencode($token.':'.$secret);
+      Mage::getSingleton('adminhtml/session')->addSuccess(
+        '<img src="http://snappic.io/static/img/general/logo.svg" style="padding:10px;background-color:#E85B52;">'.
+        '<div style="font-size:16px;font-weight:400;letter-spacing:1.2px;line-height: 1.2;border:0;padding:0;margin:24px 4px">Almost done!</div>'.
+        '<script>window.Snappic={};window.Snappic.signup=function(){window.location=\''.$link.'\';};</script>'.
+        '<img src="http://store.snappic.io/images/magento_continue_signup.png" style="width:100%;max-width:460px;cursor:pointer;" onclick="Snappic.signup()">'
+      );
+    }
     return $this;
   }
 
