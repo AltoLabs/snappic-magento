@@ -20,6 +20,27 @@
             <show_in_website>0</show_in_website>
             <show_in_store>0</show_in_store>
             <groups>
+                <environment>
+                    <label>Environment</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>10</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <comment><![CDATA[Whether to enabled sandboxing or not.]]></comment>
+                    <fields>
+                        <sandboxed>
+                            <label>Sandboxed</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </sandboxed>
+                    </fields>
+                </environment>
+
                 <facebook>
                     <label>Facebook</label>
                     <frontend_type>text</frontend_type>
@@ -27,7 +48,7 @@
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>0</show_in_store>
-                    <comment><![CDATA[]]></comment>
+                    <comment><![CDATA[You should not need to change these values.]]></comment>
                     <fields>
                         <pixel_id>
                             <label>Facebook Pixel ID</label>
@@ -47,7 +68,7 @@
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>0</show_in_store>
-                    <comment><![CDATA[]]></comment>
+                    <comment><![CDATA[Identity data shared between Magento and the Snappic API.]]></comment>
                     <fields>
                         <token>
                             <label>Token</label>
@@ -67,27 +88,6 @@
                         </secret>
                     </fields>
                 </security>
-
-
-                <misc>
-                    <label>Miscellaneous</label>
-                    <frontend_type>text</frontend_type>
-                    <sort_order>10</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>0</show_in_store>
-                    <comment><![CDATA[]]></comment>
-                    <fields>
-                        <!-- <reset>
-                            <label>Reset (Type YES)</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>20</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                        </reset> -->
-                    </fields>
-                </misc>
             </groups>
         </snappic>
     </sections>
