@@ -12,6 +12,11 @@
                 <class>AltoLabs_Snappic_Model</class>
                 <resourceModel>snappic_resource</resourceModel>
             </altolabs_snappic>
+            <cataloginventory_resource>
+                <rewrite>
+                    <stock>AltoLabs_Snappic_Model_Resource_Stock</stock>
+                </rewrite>
+            </cataloginventory_resource>
         </models>
         <helpers>
             <altolabs_snappic>
@@ -35,6 +40,14 @@
                     </altolabs_snappic_observer_order_place_after>
                 </observers>
             </sales_order_place_after>
+            <altolabs_snappic_stock_update>
+                <observers>
+                    <altolabs_snappic_stock_update_after>
+                        <class>altolabs_snappic/observer</class>
+                        <method>onProductAfterAttributeUpdate</method>
+                    </altolabs_snappic_stock_update_after>
+                </observers>
+            </altolabs_snappic_stock_update>
         </events>
         <blocks>
             <snappic>
