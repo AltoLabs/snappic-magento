@@ -11,7 +11,7 @@ $secret = $helper->getSecret();
 
 $connect = Mage::getSingleton('altolabs_snappic/connect');
 $connect->setSendable(array('token' => $token, 'secret' => $secret))
-        ->notifySnappicApi('application/installed');
+        ->notifySnappicApi('app/installed');
 
 $configPath = $helper->getConfigPath('environment/sandboxed');
 Mage::app()->getConfig()->saveConfig($configPath, 1);
