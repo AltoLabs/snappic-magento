@@ -37,7 +37,7 @@ class Altolabs_Snappic_Model_Observer {
     $sendable = $this->getHelper()->getSendableOrderData($order);
     $this->getConnect()
          ->setSendable($sendable)
-         ->notifySnappicApi('orders/paid');
+         ->notifySnappicApi('orders/paid', false);
     return $this;
   }
 
@@ -47,43 +47,49 @@ class Altolabs_Snappic_Model_Observer {
     $helper = $this->getHelper();
 
     if ($helper->getIsSandboxed()) {
-      $flagPath = $helper->getConfigPath('system/sandboxed_message');
-      $flag = Mage::getStoreConfig($flagPath);
-
-      if ($flag == 'displayed') { return $this; }
-
-      Mage::app()->getConfig()->saveConfig($flagPath, 'displayed');
-      Mage::app()->getConfig()->reinit();
+      $messages = Mage::getSingleton('adminhtml/session')
+                    ->getMessages()
+                    ->getItemsByType(Mage_Core_Model_Message::SUCCESS);
+      foreach ($messages as $message) {
+        if (strpos($message->getText(), 'snappic_sandbox_notification') !== false) {
+          return $this;
+        }
+      }
       Mage::getSingleton('adminhtml/session')->addSuccess(
         '<img src="http://snappic.io/static/img/general/logo.svg" style="padding:10px;background-color:#E85B52;">'.
         '<div style="font-size:16px;font-weight:400;letter-spacing:1.2px;line-height: 1.2;border:0;padding:0;'.
-        'margin:24px 4px">The Snappic extension is running in a sandbox. If you\'ve installed it in your '.
-        'production environment, make sure to disable the sandboxing by going to System -> Configuration '.
-        '-> AltoLabs -> Snappic.</div>'
+        'margin:24px 4px" class="snappic_sandbox_notification">The Snappic extension is running in a sandbox.'.
+        ' If you\'ve installed it in your production environment, make sure to disable the sandboxing by going'.
+        ' to System &rarr; Configuration &rarr; AltoLabs &rarr; Snappic &rarr; Environment &rarr; Sandboxed: No.</div>'
       );
     }
 
     else {
-      $flagPath = $helper->getConfigPath('system/completion_message');
-      $flag = Mage::getStoreConfig($flagPath);
+      $connect = $this->getConnect();
+      $fbId = $connect->getStoredFacebookPixelId();
+      $fakeFbId = empty($fbId) || $fbId == AltoLabs_Snappic_Model_Connect::SANDBOX_PIXEL_ID;
+      if (!$fakeFbId) { return $this; }
 
-      if ($flag == 'displayed') { return $this; }
+      $messages = Mage::getSingleton('adminhtml/session')
+                    ->getMessages()
+                    ->getItemsByType(Mage_Core_Model_Message::SUCCESS);
+      foreach ($messages as $message) {
+        if (strpos($message->getText(), 'snappic_setup_notification') !== false) {
+          return $this;
+        }
+      }
 
-      Mage::app()->getConfig()->saveConfig($flagPath, 'displayed');
-      Mage::app()->getConfig()->reinit();
-
-      $domain = $helper->getDomain();
-      $token = $helper->getToken();
-      $secret = $helper->getSecret();
       $link = $helper->getSnappicAdminUrl().
         '/?login&pricing&provider=magento'.
-        '&domain='.urlencode($domain).
-        '&access_token='.urlencode($token.':'.$secret);
+        '&domain='.urlencode($helper->getDomain()).
+        '&access_token='.urlencode($helper->getToken().':'.$helper->getSecret());
       Mage::getSingleton('adminhtml/session')->addSuccess(
         '<img src="http://snappic.io/static/img/general/logo.svg" style="padding:10px;background-color:#E85B52;">'.
-        '<div style="font-size:16px;font-weight:400;letter-spacing:1.2px;line-height: 1.2;border:0;padding:0;margin:24px 4px">Almost done!</div>'.
+        '<div style="font-size:16px;font-weight:400;letter-spacing:1.2px;line-height: 1.2;border:0;padding:0;'.
+        'margin:24px 4px" class="snappic_setup_notification">Almost done!</div>'.
         '<script>window.Snappic={};window.Snappic.signup=function(){window.location=\''.$link.'\';};</script>'.
-        '<img src="http://store.snappic.io/images/magento_continue_signup.png" style="width:100%;max-width:460px;cursor:pointer;" onclick="Snappic.signup()">'
+        '<img src="http://store.snappic.io/images/magento_continue_signup.png" style="width:100%;'.
+        'max-width:460px;cursor:pointer;" onclick="Snappic.signup()">'
       );
     }
     return $this;
@@ -112,7 +118,7 @@ class Altolabs_Snappic_Model_Observer {
         if ((int)$product->getStatus() != Mage_Catalog_Model_Product_Status::STATUS_ENABLED) {
           $this->getConnect()
                ->setSendable(array($helper->getSendableProductData($product)))
-               ->notifySnappicApi('products/delete');
+               ->notifySnappicApi('products/delete', false);
         }
         // Schedule an update for this product.
         else {
@@ -128,7 +134,7 @@ class Altolabs_Snappic_Model_Observer {
           if ((int)$product->getStatus() != Mage_Catalog_Model_Product_Status::STATUS_ENABLED) {
             $this->getConnect()
                  ->setSendable(array($helper->getSendableProductData($product)))
-                 ->notifySnappicApi('products/delete');
+                 ->notifySnappicApi('products/delete', false);
           }
           // Schedule an update for this product.
           else {
@@ -149,7 +155,7 @@ class Altolabs_Snappic_Model_Observer {
     if (count($data) != 0) {
       $this->getConnect()
            ->setSendable($data)
-           ->notifySnappicApi('products/update');
+           ->notifySnappicApi('products/update', false);
     }
   }
 
@@ -196,7 +202,7 @@ class Altolabs_Snappic_Model_Observer {
     if (count($data) != 0) {
       $this->getConnect()
            ->setSendable($data)
-           ->notifySnappicApi($action);
+           ->notifySnappicApi($action, false);
     }
   }
 
