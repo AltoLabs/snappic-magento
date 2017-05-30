@@ -7,10 +7,13 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract {
 
   protected $_sendable;
 
-  public function notifySnappicApi($topic) {
+  public function notifySnappicApi($topic, $bypassSandbox) {
     $helper = $this->getHelper();
-    Mage::log('Snappic: notifySnappicApi ' . $helper->getApiHost() . '/magento/webhooks', null, 'snappic.log');
-    $client = new Zend_Http_Client($helper->getApiHost() . '/magento/webhooks');
+
+    $host = $helper->getApiHost($bypassSandbox);
+    Mage::log('Snappic: notifySnappicApi ' . $host . '/magento/webhooks', null, 'snappic.log');
+
+    $client = new Zend_Http_Client($host . '/magento/webhooks');
     $client->setMethod(Zend_Http_Client::POST);
     $sendable = $this->seal($this->getSendable());
     $client->setRawData($sendable);
@@ -46,11 +49,18 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract {
     }
   }
 
-  public function getFacebookId($fetchWhenNone) {
+  public function getStoredFacebookPixelId() {
     $helper = $this->getHelper();
     $configPath = $helper->getConfigPath('facebook/pixel_id');
-    $fbId = Mage::getStoreConfig($configPath);
+    return Mage::getStoreConfig($configPath);
+  }
+
+  public function getFacebookId($fetchWhenNone) {
+    $fbId = $this->getStoredFacebookPixelId();
     if (!$fetchWhenNone) { return $fbId; }
+
+    $helper = $this->getHelper();
+    $configPath = $helper->getConfigPath('facebook/pixel_id');
     if ((empty($fbId) || ($fbId == self::SANDBOX_PIXEL_ID && $helper->getIsProduction()))) {
       Mage::log('Fetching a Facebook ID from Snappic API...', null, 'snappic.log');
       $snappicStore = $this->getSnappicStore();
