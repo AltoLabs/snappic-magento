@@ -8,9 +8,14 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract {
   protected $_sendable;
 
   public function notifySnappicApi($topic) {
+    $host = $helper->getApiHost();
+    if ($topic == 'app/installed' || $topic == 'app/uninstalled') {
+      $host = $helper->getProductionHost();
+    }
+
     $helper = $this->getHelper();
-    Mage::log('Snappic: notifySnappicApi ' . $helper->getApiHost() . '/magento/webhooks', null, 'snappic.log');
-    $client = new Zend_Http_Client($helper->getApiHost() . '/magento/webhooks');
+    Mage::log('Snappic: notifySnappicApi ' . $host . '/magento/webhooks', null, 'snappic.log');
+    $client = new Zend_Http_Client($host . '/magento/webhooks');
     $client->setMethod(Zend_Http_Client::POST);
     $sendable = $this->seal($this->getSendable());
     $client->setRawData($sendable);
