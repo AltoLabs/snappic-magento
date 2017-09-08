@@ -2,7 +2,6 @@
 /* This file is Copyright AltoLabs 2016. */
 
 class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract {
-  const STORE_DEFAULTS = array('facebook_pixel_id' => null);
   const SANDBOX_PIXEL_ID = '123123123';
 
   protected $_sendable;
@@ -38,14 +37,15 @@ class AltoLabs_Snappic_Model_Connect extends Mage_Core_Model_Abstract {
 
   public function getSnappicStore() {
     $helper = $this->getHelper();
+    $defaults = array('facebook_pixel_id' => null);
     $domain = $helper->getDomain();
     $client = new Zend_Http_Client($helper->getApiHost() . '/stores/current?domain=' . $domain);
     $client->setMethod(Zend_Http_Client::GET);
     try {
       $body = $client->request()->getBody();
-      return array_merge(self::STORE_DEFAULTS, Mage::helper('core')->jsonDecode($body));
+      return array_merge($defaults, Mage::helper('core')->jsonDecode($body));
     } catch (Exception $e) {
-      return self::STORE_DEFAULTS;
+      return $defaults;
     }
   }
 
