@@ -79,10 +79,11 @@ class Altolabs_Snappic_Model_Observer {
         }
       }
 
-      $link = $helper->getSnappicAdminUrl().
-        '/?login&pricing&provider=magento'.
-        '&domain='.urlencode($helper->getDomain()).
-        '&access_token='.urlencode($helper->getToken().':'.$helper->getSecret());
+      $link = $helper->getSnappicAdminUrl()
+                .'?login=true'
+                .'&provider=magento'
+                .'&domain='.urlencode($helper->getDomain())
+                .'&access_token='.urlencode($helper->getToken().':'.$helper->getSecret());
       Mage::getSingleton('adminhtml/session')->addSuccess(
         '<img src="http://snappic.io/static/img/general/logo.svg" style="padding:10px;background-color:#E85B52;">'.
         '<div style="font-size:16px;font-weight:400;letter-spacing:1.2px;line-height: 1.2;border:0;padding:0;'.

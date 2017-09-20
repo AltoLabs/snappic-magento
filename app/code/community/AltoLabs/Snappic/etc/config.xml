@@ -3,7 +3,7 @@
 <config>
     <modules>
         <AltoLabs_Snappic>
-            <version>1.0.12</version>
+            <version>1.0.13</version>
         </AltoLabs_Snappic>
     </modules>
     <global>
